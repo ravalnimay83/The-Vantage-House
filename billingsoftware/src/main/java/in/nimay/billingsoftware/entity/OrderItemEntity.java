@@ -25,6 +25,12 @@ public class OrderItemEntity {
 
     private String name;
 
+    private String size;
+
+    private String color;
+
+    private String imgUrl;
+
     private BigDecimal price;
 
     private Integer quantity;

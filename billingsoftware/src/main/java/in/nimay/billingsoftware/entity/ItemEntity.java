@@ -14,31 +14,47 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name="tbl_items")
+@Table(name = "tbl_items")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ItemEntity
-{
+public class ItemEntity {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique=true)
+    @Column(unique = true)
     private String itemId;
+
     private String name;
+
     private BigDecimal price;
+
+    private BigDecimal originalPrice;
+
+    @Column(length = 1000)
     private String description;
 
+    private String brand;
+
+    private String sizes;
+
+    private String color;
+
+    private String fabric;
+
+    private Integer stock;
+
     @CreationTimestamp
-    @Column(updatable=false)
+    @Column(updatable = false)
     private Timestamp createdAt;
 
     @UpdateTimestamp
     private Timestamp updatedAt;
 
     private String imgUrl;
+
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)

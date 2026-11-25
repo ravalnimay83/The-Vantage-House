@@ -16,13 +16,24 @@ import java.util.List;
 public class OrderResponse {
 
     private String orderId;
+    private String orderNumber;
     private String customerName;
     private String phoneNumber;
+    private String addressLine;
+    private String pincode;
+    private String city;
+    private String state;
+    private String addressLabel;
+    private String estimatedDelivery;
     private List<OrderItemResponse> cartItems;
     private BigDecimal subtotal;
+    private BigDecimal deliveryFee;
     private BigDecimal tax;
     private BigDecimal grandTotal;
     private String paymentMethod;
+    private String paymentStatus;
+    private String orderStatus;
+    private String paymentChannel;
     private LocalDateTime createdAt;
     private PaymentDetails paymentDetails;
 

@@ -16,10 +16,18 @@ public class OrderRequest {
 
     private String customerName;
     private String phoneNumber;
+    private String addressLine;
+    private String pincode;
+    private String city;
+    private String state;
+    private String addressLabel;
+    private String estimatedDelivery;
     private List<OrderItemRequest> cartItems;
     private BigDecimal subtotal;
+    private BigDecimal deliveryFee;
     private BigDecimal tax;
     private BigDecimal grandTotal;
     private String paymentMethod;
+    private String idempotencyKey;
 
 }

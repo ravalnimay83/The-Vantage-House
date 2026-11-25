@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 
 @Data
@@ -17,7 +16,12 @@ public class UserResponse {
     private String name;
     private String userId;
     private String email;
+    private String phoneNumber;
     private String role;
+    private String provider;
+    private String avatarUrl;
+    private Boolean passwordSet;
+    private Integer xp;
     private Timestamp createdAt;
     private Timestamp updatedAt;
 

@@ -1,12 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/AppContextDefinition.js";
-import { addCategory } from "../../Service/CategoryService.js";
+import { addCategory, updateCategory } from "../../Service/CategoryService.js";
 import { assets } from "../../assets/assets.js";
-import "./CategoryForm.css";
+import toast from "react-hot-toast";
 
-const initialData = { name: "", description: "", bgColor: "#563d7c" };
+const initialData = { name: "", description: "", bgColor: "#2d4c24" };
 
-const CategoryForm = () => {
+const CategoryForm = ({ editingCategory, onCancelEdit, onSuccess, onBackToList }) => {
     const { setCategories } = useContext(AppContext);
     const [data, setData] = useState(initialData);
     const [image, setImage] = useState(null);
@@ -14,8 +14,19 @@ const CategoryForm = () => {
     const [error, setError] = useState("");
 
     useEffect(() => {
-        console.log(data);
-    }, [data]);
+        if (editingCategory) {
+            setData({
+                name: editingCategory.name || "",
+                description: editingCategory.description || "",
+                bgColor: editingCategory.bgColor || "#2d4c24",
+            });
+            setImage(null);
+            setError("");
+        } else {
+            setData(initialData);
+            setImage(null);
+        }
+    }, [editingCategory]);
 
     const onChangeHandler = (event) => {
         const { name, value } = event.target;
@@ -30,66 +41,173 @@ const CategoryForm = () => {
         event.preventDefault();
         setError("");
 
-        if (!image) {
+        if (!data.name.trim()) {
+            setError("Please enter a category name.");
+            return;
+        }
+        if (!editingCategory && !image) {
             setError("Please choose a category image.");
             return;
         }
 
         setLoading(true);
         const formData = new FormData();
-        formData.append("category", JSON.stringify(data));
-        formData.append("file", image);
+        formData.append(
+            "category",
+            JSON.stringify({
+                name: data.name.trim(),
+                description: data.description.trim(),
+                bgColor: data.bgColor,
+            })
+        );
+        if (image) {
+            formData.append("file", image);
+        }
 
         try {
-            const response = await addCategory(formData);
-            setCategories((current) => [...current, response.data]);
+            if (editingCategory) {
+                const response = await updateCategory(editingCategory.categoryId, formData);
+                setCategories((current) =>
+                    current.map((c) =>
+                        c.categoryId === editingCategory.categoryId ? response.data : c
+                    )
+                );
+                toast.success("Category updated successfully!");
+            } else {
+                const response = await addCategory(formData);
+                setCategories((current) => [...current, response.data]);
+                toast.success("Category added successfully!");
+            }
             setData(initialData);
             setImage(null);
             event.target.reset();
+            if (onSuccess) onSuccess();
         } catch (submitError) {
-            setError("Unable to save the category. Please try again.");
-            console.error("Unable to save category", submitError);
+            const msg = submitError.response?.data?.message || "Unable to save the category.";
+            setError(msg);
+            toast.error(msg);
         } finally {
             setLoading(false);
         }
     };
 
+    const previewSrc = image
+        ? URL.createObjectURL(image)
+        : editingCategory?.imageUrl || assets.upload;
+
     return (
-        <div className="mx-2 mt-2">
-            <div className="card-body">
-                <form onSubmit={onSubmitHandler}>
-                    <div className="mb-3">
-                        <label htmlFor="category-image" className="form-label">Image</label>
-                        <label htmlFor="category-image" className="category-image-upload">
-                            <img src={image ? URL.createObjectURL(image) : assets.upload}
-                                 alt="Category preview" className="category-image-preview" />
-                            <span>{image ? image.name : "Choose an image"}</span>
-                        </label>
-                        <input id="category-image" type="file" accept="image/*"
-                               className="form-control d-none" onChange={onImageChangeHandler} />
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="category-name" className="form-label">Category Name</label>
-                        <input id="category-name" name="name" className="form-control"
-                               value={data.name} onChange={onChangeHandler} required />
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="category-description" className="form-label">Description</label>
-                        <textarea id="category-description" name="description" className="form-control"
-                                  value={data.description} onChange={onChangeHandler} />
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="category-color" className="form-label">Background Color</label>
-                        <input id="category-color" name="bgColor" type="color"
-                               className="form-control form-control-color" value={data.bgColor}
-                               onChange={onChangeHandler} />
-                    </div>
-                    {error && <p className="text-danger">{error}</p>}
-                    <button type="submit" className="btn btn-warning w-100" disabled={loading}>
-                        {loading ? "Saving..." : "Save"}
-                    </button>
-                </form>
+        <div>
+            <div className="admin-panel-heading">
+                <h5>{editingCategory ? "Edit Category" : "Add Clothing Category"}</h5>
+                <div className="d-flex gap-2">
+                    {editingCategory && (
+                        <button
+                            type="button"
+                            className="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                            onClick={onCancelEdit}
+                        >
+                            Cancel
+                        </button>
+                    )}
+                    {onBackToList && (
+                        <button
+                            type="button"
+                            className="admin-back-list-btn"
+                            onClick={onBackToList}
+                        >
+                            <i className="bi bi-arrow-left"></i>
+                            List
+                        </button>
+                    )}
+                </div>
             </div>
+
+            <form onSubmit={onSubmitHandler}>
+                <div className="mb-3">
+                    <label htmlFor="category-image" className="form-label">
+                        Category Image
+                    </label>
+                    <label htmlFor="category-image" className="admin-upload-box">
+                        <img
+                            src={previewSrc}
+                            alt="Category preview"
+                            className="admin-upload-preview"
+                            onError={(e) => {
+                                e.currentTarget.onerror = null;
+                                e.currentTarget.src = assets.upload;
+                            }}
+                        />
+                        <span>
+                            {image
+                                ? image.name
+                                : editingCategory
+                                ? "Click to replace image (optional)"
+                                : "Click to choose image"}
+                        </span>
+                    </label>
+                    <input
+                        id="category-image"
+                        type="file"
+                        accept="image/*"
+                        className="d-none"
+                        onChange={onImageChangeHandler}
+                    />
+                </div>
+
+                <div className="mb-3">
+                    <label htmlFor="category-name" className="form-label">
+                        Category Name <span className="text-danger">*</span>
+                    </label>
+                    <input
+                        id="category-name"
+                        name="name"
+                        className="form-control"
+                        placeholder="e.g. T-Shirts, Shirts, Pants"
+                        value={data.name}
+                        onChange={onChangeHandler}
+                        required
+                    />
+                </div>
+
+                <div className="mb-3">
+                    <label htmlFor="category-description" className="form-label">
+                        Description
+                    </label>
+                    <textarea
+                        id="category-description"
+                        name="description"
+                        rows="3"
+                        className="form-control"
+                        placeholder="Describe this clothing category..."
+                        value={data.description}
+                        onChange={onChangeHandler}
+                    />
+                </div>
+
+                <div className="mb-3">
+                    <label htmlFor="category-color" className="form-label">
+                        Accent Color
+                    </label>
+                    <input
+                        id="category-color"
+                        name="bgColor"
+                        type="color"
+                        className="form-control form-control-color"
+                        value={data.bgColor}
+                        onChange={onChangeHandler}
+                    />
+                </div>
+
+                {error && <p className="text-danger small fw-semibold mb-2">{error}</p>}
+
+                <button type="submit" className="admin-submit-btn" disabled={loading}>
+                    {loading
+                        ? "Saving..."
+                        : editingCategory
+                        ? "Update Category"
+                        : "Save Category"}
+                </button>
+            </form>
         </div>
     );
 };

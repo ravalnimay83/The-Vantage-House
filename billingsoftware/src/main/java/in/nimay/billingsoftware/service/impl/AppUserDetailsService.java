@@ -10,21 +10,29 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
-public class AppUserDetailsService
-implements UserDetailsService {
+public class AppUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        UserEntity existingUsers =  userRepository.findByEmail(email)
-        .orElseThrow(() -> new UsernameNotFoundException("Email not  found :"+email));
-        return new User(existingUsers.getEmail(), existingUsers.getPassword(), Collections.singleton(new SimpleGrantedAuthority(existingUsers.getRole())));
+    public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {
+        UserEntity existingUser = userRepository.findByEmailOrPhoneNumber(identifier)
+                .orElseThrow(() -> new UsernameNotFoundException("Account not found: " + identifier));
+
+        String principal = existingUser.getEmail() != null && !existingUser.getEmail().isBlank()
+                ? existingUser.getEmail()
+                : existingUser.getPhoneNumber();
+
+        String encodedPassword = existingUser.getPassword() != null ? existingUser.getPassword() : "";
+
+        return new User(
+                principal,
+                encodedPassword,
+                Collections.singleton(new SimpleGrantedAuthority(existingUser.getRole()))
+        );
     }
 }

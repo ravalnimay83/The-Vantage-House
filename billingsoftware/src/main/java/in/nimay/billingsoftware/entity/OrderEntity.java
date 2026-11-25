@@ -27,17 +27,54 @@ public class OrderEntity {
     @Column(unique = true, nullable = false)
     private String orderId;
 
+    private String orderNumber;
+
     private String customerName;
 
     private String phoneNumber;
 
+    private String userEmail;
+
+    @Column(length = 500)
+    private String addressLine;
+
+    private String pincode;
+
+    private String city;
+
+    private String state;
+
+    private String addressLabel;
+
+    private String estimatedDelivery;
+
     private BigDecimal subtotal;
+
+    private BigDecimal deliveryFee;
 
     private BigDecimal tax;
 
     private BigDecimal grandTotal;
 
     private String paymentMethod;
+
+    private String paymentStatus;
+
+    private String orderStatus;
+
+    private String paymentChannel;
+
+    private String razorpayOrderId;
+
+    private String razorpayPaymentId;
+
+    private String razorpaySignature;
+
+    @Column(unique = true)
+    private String idempotencyKey;
+
+    @Builder.Default
+    private Boolean stockDeducted = false;
 
     @CreationTimestamp
     @Column(updatable = false)

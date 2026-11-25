@@ -56,13 +56,31 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found: " + itemId));
 
         if (request.getName() != null && !request.getName().isBlank()) {
-            existingItem.setName(request.getName());
+            existingItem.setName(request.getName().trim());
         }
         if (request.getDescription() != null) {
-            existingItem.setDescription(request.getDescription());
+            existingItem.setDescription(request.getDescription().trim());
         }
         if (request.getPrice() != null) {
             existingItem.setPrice(request.getPrice());
+        }
+        if (request.getOriginalPrice() != null) {
+            existingItem.setOriginalPrice(request.getOriginalPrice());
+        }
+        if (request.getBrand() != null) {
+            existingItem.setBrand(request.getBrand().trim());
+        }
+        if (request.getSizes() != null) {
+            existingItem.setSizes(request.getSizes().trim());
+        }
+        if (request.getColor() != null) {
+            existingItem.setColor(request.getColor().trim());
+        }
+        if (request.getFabric() != null) {
+            existingItem.setFabric(request.getFabric().trim());
+        }
+        if (request.getStock() != null) {
+            existingItem.setStock(request.getStock());
         }
         if (request.getCategoryId() != null && !request.getCategoryId().isBlank()) {
             CategoryEntity category = categoryRepository.findByCategoryId(request.getCategoryId())
@@ -72,9 +90,7 @@ public class ItemServiceImpl implements ItemService {
 
         if (file != null && !file.isEmpty()) {
             try {
-                if (existingItem.getImgUrl() != null && !existingItem.getImgUrl().isBlank()) {
-                    fileUploadService.deleteFile(existingItem.getImgUrl());
-                }
+                safeDeleteS3File(existingItem.getImgUrl());
                 String imgUrl = fileUploadService.uploadFile(file);
                 existingItem.setImgUrl(imgUrl);
             } catch (IOException e) {
@@ -96,6 +112,12 @@ public class ItemServiceImpl implements ItemService {
                 .name(newItem.getName())
                 .description(newItem.getDescription())
                 .price(newItem.getPrice())
+                .originalPrice(newItem.getOriginalPrice())
+                .brand(newItem.getBrand())
+                .sizes(newItem.getSizes())
+                .color(newItem.getColor())
+                .fabric(newItem.getFabric())
+                .stock(newItem.getStock())
                 .imageUrl(newItem.getImgUrl())
                 .categoryName(newItem.getCategory() != null ? newItem.getCategory().getName() : null)
                 .categoryId(newItem.getCategory() != null ? newItem.getCategory().getCategoryId() : null)
@@ -110,6 +132,12 @@ public class ItemServiceImpl implements ItemService {
                 .name(request.getName())
                 .description(request.getDescription())
                 .price(request.getPrice())
+                .originalPrice(request.getOriginalPrice())
+                .brand(request.getBrand())
+                .sizes(request.getSizes())
+                .color(request.getColor())
+                .fabric(request.getFabric())
+                .stock(request.getStock() != null ? request.getStock() : 25)
                 .build();
     }
 
@@ -125,9 +153,17 @@ public class ItemServiceImpl implements ItemService {
     public void deleteItem(String itemId) {
         ItemEntity existingItem = itemRepository.findByItemId(itemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found: " + itemId));
-        if (existingItem.getImgUrl() != null && !existingItem.getImgUrl().isBlank()) {
-            fileUploadService.deleteFile(existingItem.getImgUrl());
-        }
+        safeDeleteS3File(existingItem.getImgUrl());
         itemRepository.delete(existingItem);
+    }
+
+    private void safeDeleteS3File(String imgUrl) {
+        if (imgUrl != null && imgUrl.contains("amazonaws.com")) {
+            try {
+                fileUploadService.deleteFile(imgUrl);
+            } catch (Exception ignored) {
+                // Ignore S3 cleanup errors
+            }
+        }
     }
 }

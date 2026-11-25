@@ -2,7 +2,7 @@ import { useState } from "react";
 import { deleteUser } from "../../Service/UserService.js";
 import toast from "react-hot-toast";
 
-const UsersList = ({ users, setUsers }) => {
+const UsersList = ({ users, setUsers, onAddClick }) => {
     const [searchTerm, setSearchTerm] = useState("");
 
     const safeUsers = Array.isArray(users) ? users : [];
@@ -10,7 +10,8 @@ const UsersList = ({ users, setUsers }) => {
         const query = searchTerm.toLowerCase();
         const nameMatch = (user?.name || "").toLowerCase().includes(query);
         const emailMatch = (user?.email || "").toLowerCase().includes(query);
-        return nameMatch || emailMatch;
+        const phoneMatch = (user?.phoneNumber || "").toLowerCase().includes(query);
+        return nameMatch || emailMatch || phoneMatch;
     });
 
     const deleteByUserId = async (id) => {
@@ -26,89 +27,79 @@ const UsersList = ({ users, setUsers }) => {
     };
 
     return (
-        <div className="users-list-container d-flex flex-column h-100">
-            <div className="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary">
-                <h4 className="m-0 text-white fw-bold">Users</h4>
-                <span className="badge bg-primary px-3 py-2 rounded-pill">
-                    {safeUsers.length} total
-                </span>
+        <div>
+            <div className="admin-panel-heading">
+                <div className="d-flex align-items-center gap-2">
+                    <h4>Registered Users</h4>
+                    <span className="admin-count-pill">{safeUsers.length} total</span>
+                </div>
+                {onAddClick && (
+                    <button type="button" className="admin-add-mobile-btn" onClick={onAddClick}>
+                        <i className="bi bi-plus-lg"></i>
+                        Add User
+                    </button>
+                )}
             </div>
 
-            <div className="input-group mb-3">
-                <input
-                    type="text"
-                    name="keyword"
-                    id="keyword"
-                    placeholder="Search by name or email"
-                    className="form-control"
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    value={searchTerm}
-                />
-                <span className="input-group-text bg-warning text-dark">
+            <div className="admin-list-toolbar">
+                <div className="admin-search-input-wrap">
                     <i className="bi bi-search"></i>
-                </span>
+                    <input
+                        type="text"
+                        placeholder="Search by name, email, or phone..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
             </div>
 
-            <div className="users-cards-wrapper flex-grow-1 overflow-auto pe-1">
-                {filteredUsers.length === 0 ? (
-                    <p className="text-secondary p-3 text-center">No users found.</p>
-                ) : (
-                    <div className="d-flex flex-column gap-3">
-                        {filteredUsers.map((user, index) => (
-                            <div
-                                key={user.userId || index}
-                                className="card p-3 border-secondary"
-                                style={{
-                                    background: "rgba(255, 255, 255, 0.05)",
-                                    backdropFilter: "blur(10px)",
-                                    borderRadius: "12px",
-                                    border: "1px solid rgba(255, 255, 255, 0.12)"
-                                }}
-                            >
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <div className="d-flex align-items-center gap-3">
-                                        <div
-                                            className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
-                                            style={{
-                                                width: "42px",
-                                                height: "42px",
-                                                backgroundColor: "#6366f1",
-                                                fontSize: "1.1rem"
-                                            }}
-                                        >
-                                            {(user?.name || "U").charAt(0).toUpperCase()}
-                                        </div>
-                                        <div>
-                                            <div className="d-flex align-items-center gap-2">
-                                                <h6 className="mb-0 text-white fw-semibold">{user.name}</h6>
-                                                <span
-                                                    className={`badge ${
-                                                        user.role === "ROLE_ADMIN" ? "bg-danger" : "bg-secondary"
-                                                    }`}
-                                                    style={{ fontSize: "0.7rem" }}
-                                                >
-                                                    {user.role || "ROLE_USER"}
+            {filteredUsers.length === 0 ? (
+                <div className="text-center py-5 text-muted">
+                    <i className="bi bi-people fs-1 d-block mb-2"></i>
+                    <p className="mb-0">No users found.</p>
+                </div>
+            ) : (
+                <div className="admin-users-list">
+                    {filteredUsers.map((user, index) => {
+                        const isAdminUser = user.role === "ROLE_ADMIN";
+                        return (
+                            <div key={user.userId || index} className="admin-user-row">
+                                <div className="d-flex align-items-center gap-3 min-width-0">
+                                    <div className={`admin-user-avatar ${isAdminUser ? "is-admin" : ""}`}>
+                                        {(user?.name || "U").charAt(0).toUpperCase()}
+                                    </div>
+                                    <div className="min-width-0">
+                                        <div className="d-flex align-items-center gap-2 flex-wrap">
+                                            <span className="fw-bold text-dark">{user.name}</span>
+                                            {isAdminUser && (
+                                                <span className="badge rounded-pill text-bg-warning fw-bold" style={{ fontSize: "10px" }}>
+                                                    <i className="bi bi-shield-fill-check me-1"></i>
+                                                    ADMIN
                                                 </span>
-                                            </div>
-                                            <small className="text-white-50">{user.email}</small>
+                                            )}
+                                        </div>
+                                        <div className="small text-muted text-truncate">
+                                            {user.email || user.phoneNumber}
+                                            {user.email && user.phoneNumber ? ` • ${user.phoneNumber}` : ""}
                                         </div>
                                     </div>
+                                </div>
 
+                                {!isAdminUser && (
                                     <button
                                         type="button"
-                                        className="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center"
-                                        style={{ width: "36px", height: "36px", borderRadius: "8px" }}
+                                        className="admin-icon-action delete"
                                         title="Delete User"
                                         onClick={() => deleteByUserId(user.userId)}
                                     >
                                         <i className="bi bi-trash3-fill"></i>
                                     </button>
-                                </div>
+                                )}
                             </div>
-                        ))}
-                    </div>
-                )}
-            </div>
+                        );
+                    })}
+                </div>
+            )}
         </div>
     );
 };

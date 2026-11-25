@@ -71,6 +71,7 @@
         height: auto;
         min-height: calc(100vh - 5rem);
         overflow: visible;
+        padding: 14px 14px 94px;
     }
 
     .left-column,

@@ -1,0 +1,69 @@
+.admin-panel-banner {
+    background: linear-gradient(135deg, #1b2c19 0%, #2d4c24 100%);
+    color: #ffffff;
+    border-radius: 18px;
+    padding: 14px 20px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    box-shadow: 0 6px 20px rgba(27, 44, 25, 0.18);
+}
+
+.admin-panel-title-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.admin-panel-title-group h5 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+}
+
+.admin-access-pill {
+    background: linear-gradient(135deg, #fbbf24, #d97706);
+    color: #111827;
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.admin-panel-nav-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.admin-panel-pill-link {
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    transition: all 0.15s ease;
+}
+
+.admin-panel-pill-link:hover {
+    background: rgba(255, 255, 255, 0.22);
+    color: #ffffff;
+}
+
+.admin-panel-pill-link.active {
+    background: #ffffff;
+    color: #111827;
+    border-color: #ffffff;
+}

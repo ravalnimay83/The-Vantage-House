@@ -1,0 +1,222 @@
+.pqv-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(17, 24, 39, 0.6);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+}
+
+.pqv-card {
+    background: #f6f7f5;
+    color: #111827;
+    width: 100%;
+    max-width: 780px;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+}
+
+.pqv-image-side {
+    background: #e9ebe6;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 360px;
+    padding: 24px;
+}
+
+.pqv-image-side img {
+    max-width: 100%;
+    max-height: 320px;
+    object-fit: contain;
+    border-radius: 18px;
+}
+
+.pqv-top-actions {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    right: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pqv-circle-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: #ffffff;
+    color: #111827;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.pqv-circle-btn:hover {
+    transform: scale(1.06);
+}
+
+.pqv-circle-btn.wishlisted {
+    background: #111827;
+    color: #ffffff;
+}
+
+.pqv-info-side {
+    background: #ffffff;
+    padding: 32px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.pqv-category-pill {
+    display: inline-block;
+    background: #ecfdf5;
+    color: #2d4c24;
+    border: 1px solid #d1fae5;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 12px;
+}
+
+.pqv-title {
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0 0 10px 0;
+    line-height: 1.2;
+}
+
+.pqv-desc {
+    font-size: 0.92rem;
+    color: #6b7280;
+    line-height: 1.55;
+    margin: 0 0 22px 0;
+}
+
+.pqv-price-qty-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.pqv-price-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pqv-price {
+    font-size: 1.65rem;
+    font-weight: 800;
+    color: #111827;
+}
+
+.pqv-badge-off {
+    background: #111827;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 9px;
+    border-radius: 999px;
+}
+
+.pqv-qty-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pqv-qty-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid #e5e7eb;
+    background: #f3f4f6;
+    color: #111827;
+    font-weight: 700;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.pqv-qty-btn:hover {
+    background: #e5e7eb;
+}
+
+.pqv-qty-val {
+    font-weight: 700;
+    font-size: 15px;
+    min-width: 18px;
+    text-align: center;
+}
+
+.pqv-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pqv-buy-btn {
+    width: 100%;
+    padding: 14px 20px;
+    border-radius: 999px;
+    border: none;
+    background: #111827;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.pqv-buy-btn:hover {
+    background: #2d4c24;
+    transform: translateY(-1px);
+}
+
+.pqv-cart-btn {
+    width: 100%;
+    padding: 12px 20px;
+    border-radius: 999px;
+    border: 1.5px solid #111827;
+    background: transparent;
+    color: #111827;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.pqv-cart-btn:hover {
+    background: #f3f4f6;
+}
+
+@media (max-width: 720px) {
+    .pqv-card {
+        grid-template-columns: 1fr;
+    }
+    .pqv-image-side {
+        min-height: 240px;
+    }
+}

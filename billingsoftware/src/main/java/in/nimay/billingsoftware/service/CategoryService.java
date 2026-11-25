@@ -10,6 +10,10 @@ import java.util.List;
 public interface CategoryService {
 
     CategoryResponse add(CategoryRequest request, MultipartFile file) throws IOException;
+
+    CategoryResponse update(String categoryId, CategoryRequest request, MultipartFile file) throws IOException;
+
     List<CategoryResponse> read();
+
     void delete(String categoryId);
 }

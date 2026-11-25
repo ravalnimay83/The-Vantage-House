@@ -8,5 +8,9 @@ import java.util.Optional;
 
 public interface OrderEntityRepository extends JpaRepository<OrderEntity, Long> {
     Optional<OrderEntity> findByOrderId(String orderId);
+    Optional<OrderEntity> findByRazorpayOrderId(String razorpayOrderId);
+    Optional<OrderEntity> findByIdempotencyKey(String idempotencyKey);
     List<OrderEntity> findAllByOrderByCreatedAtDesc();
+    List<OrderEntity> findByUserEmailOrPhoneNumberOrderByCreatedAtDesc(String userEmail, String phoneNumber);
+    List<OrderEntity> findByUserEmailOrderByCreatedAtDesc(String userEmail);
 }

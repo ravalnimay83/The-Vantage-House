@@ -1,0 +1,341 @@
+.products-page {
+    min-height: calc(100vh - 64px);
+    background: #f5f6f4;
+    color: #111827;
+    padding: 24px 28px 56px;
+    box-sizing: border-box;
+}
+
+.products-shell {
+    max-width: 1340px;
+    margin: 0 auto;
+}
+
+/* Breadcrumb & Top Bar */
+.products-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 16px;
+}
+
+.products-breadcrumb a {
+    color: #2d4c24;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.products-breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.products-layout {
+    display: grid;
+    grid-template-columns: 270px 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+/* Amazon-Style Left Filter Sidebar */
+.filters-sidebar {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 22px;
+    padding: 20px;
+    position: sticky;
+    top: 84px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+}
+
+.filters-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.filters-header h5 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #111827;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filters-clear-btn {
+    background: none;
+    border: none;
+    color: #dc2626;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0;
+}
+
+.filters-clear-btn:hover {
+    text-decoration: underline;
+}
+
+.filter-group {
+    margin-bottom: 22px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.filter-group:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.filter-group-title {
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #374151;
+    margin-bottom: 12px;
+}
+
+.filter-category-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.filter-category-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: none;
+    background: transparent;
+    color: #374151;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s ease;
+}
+
+.filter-category-item:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.filter-category-item.active {
+    background: #111827;
+    color: #ffffff;
+}
+
+.filter-cat-count {
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: rgba(107, 114, 128, 0.14);
+}
+
+.filter-category-item.active .filter-cat-count {
+    background: rgba(255, 255, 255, 0.22);
+    color: #ffffff;
+}
+
+/* Price Radio Options */
+.filter-price-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.filter-radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #374151;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.filter-radio-label input[type="radio"],
+.filter-radio-label input[type="checkbox"] {
+    accent-color: #2d4c24;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
+
+.custom-price-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.custom-price-inputs input {
+    width: 100%;
+    padding: 7px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    font-size: 12px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.custom-price-inputs input:focus {
+    border-color: #2d4c24;
+}
+
+/* Right Content Area */
+.products-main {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.products-toolbar {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.products-search-box {
+    flex: 1;
+    min-width: 220px;
+    display: flex;
+    align-items: center;
+    background: #f5f6f4;
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    padding: 7px 14px;
+}
+
+.products-search-box i {
+    color: #6b7280;
+    margin-right: 8px;
+}
+
+.products-search-box input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: 13px;
+    color: #111827;
+}
+
+.products-sort-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.products-result-count {
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.products-sort-select {
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    color: #111827;
+    font-size: 13px;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+}
+
+/* Active Filter Chips */
+.active-filters-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.active-filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #1b3417;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 999px;
+}
+
+.active-filter-chip button {
+    border: none;
+    background: none;
+    color: #1b3417;
+    font-weight: 800;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+/* Products Grid */
+.amazon-products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
+    gap: 18px;
+}
+
+.products-empty-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 22px;
+    padding: 56px 24px;
+    text-align: center;
+    color: #6b7280;
+}
+
+@media (max-width: 900px) {
+    .products-layout {
+        grid-template-columns: 1fr;
+    }
+    .filters-sidebar {
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    .products-page {
+        padding: 14px 14px 94px;
+    }
+    .products-toolbar {
+        padding: 12px;
+        border-radius: 16px;
+        gap: 10px;
+    }
+    .products-search-box {
+        min-width: 100%;
+    }
+    .products-sort-group {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .amazon-products-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+}

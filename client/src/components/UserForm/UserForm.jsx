@@ -1,15 +1,14 @@
-import {useState} from "react";
-import {addUser} from "../../Service/UserService.js";
+import { useState } from "react";
+import { addUser } from "../../Service/UserService.js";
 import toast from "react-hot-toast";
 
-const UserForm = ({setUsers}) => {
-
+const UserForm = ({ setUsers, onSuccess, onBackToList }) => {
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState({
         name: "",
         email: "",
+        phoneNumber: "",
         password: "",
-        role: "ROLE_USER"
     });
 
     const onChangeHandler = (e) => {
@@ -21,16 +20,23 @@ const UserForm = ({setUsers}) => {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await addUser(data);
+            const response = await addUser({
+                name: data.name.trim(),
+                email: data.email.trim() || null,
+                phoneNumber: data.phoneNumber.trim() || null,
+                password: data.password,
+                role: "ROLE_USER",
+            });
             setUsers((prevUsers) => [...prevUsers, response.data]);
             toast.success("User added successfully");
             setData({
                 name: "",
                 email: "",
+                phoneNumber: "",
                 password: "",
-                role: "ROLE_USER"
             });
-        } catch(error) {
+            if (onSuccess) onSuccess();
+        } catch (error) {
             console.error("Error adding user:", error);
             const message = error.response?.data?.message || error.message || "Failed to add user";
             toast.error("Error adding user: " + message);
@@ -40,12 +46,25 @@ const UserForm = ({setUsers}) => {
     };
 
     return (
-        <div className="user-form-container">
-            <h4 className="mb-3 text-white fw-bold">Add User</h4>
+        <div>
+            <div className="admin-panel-heading">
+                <h5>Add New User</h5>
+                {onBackToList && (
+                    <button
+                        type="button"
+                        className="admin-back-list-btn"
+                        onClick={onBackToList}
+                    >
+                        <i className="bi bi-arrow-left"></i>
+                        List
+                    </button>
+                )}
+            </div>
+
             <form onSubmit={onSubmitHandler}>
                 <div className="mb-3">
-                    <label htmlFor="name" className="form-label text-white">
-                        User Name
+                    <label htmlFor="name" className="form-label">
+                        Full Name <span className="text-danger">*</span>
                     </label>
                     <input
                         type="text"
@@ -60,8 +79,8 @@ const UserForm = ({setUsers}) => {
                 </div>
 
                 <div className="mb-3">
-                    <label htmlFor="email" className="form-label text-white">
-                        User Email
+                    <label htmlFor="email" className="form-label">
+                        Email Address <span className="text-danger">*</span>
                     </label>
                     <input
                         type="email"
@@ -76,8 +95,23 @@ const UserForm = ({setUsers}) => {
                 </div>
 
                 <div className="mb-3">
-                    <label htmlFor="password" className="form-label text-white">
-                        Password
+                    <label htmlFor="phoneNumber" className="form-label">
+                        Mobile Number
+                    </label>
+                    <input
+                        type="tel"
+                        id="phoneNumber"
+                        name="phoneNumber"
+                        className="form-control"
+                        placeholder="+919876543210"
+                        onChange={onChangeHandler}
+                        value={data.phoneNumber}
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label htmlFor="password" className="form-label">
+                        Password <span className="text-danger">*</span>
                     </label>
                     <input
                         type="password"
@@ -91,23 +125,7 @@ const UserForm = ({setUsers}) => {
                     />
                 </div>
 
-                <div className="mb-4">
-                    <label htmlFor="role" className="form-label text-white">
-                        Role
-                    </label>
-                    <select
-                        id="role"
-                        name="role"
-                        className="form-select"
-                        value={data.role}
-                        onChange={onChangeHandler}
-                    >
-                        <option value="ROLE_USER">User (ROLE_USER)</option>
-                        <option value="ROLE_ADMIN">Admin (ROLE_ADMIN)</option>
-                    </select>
-                </div>
-
-                <button type="submit" className="btn btn-warning w-100 fw-bold" disabled={loading}>
+                <button type="submit" className="admin-submit-btn" disabled={loading}>
                     {loading ? "Saving..." : "Save User"}
                 </button>
             </form>

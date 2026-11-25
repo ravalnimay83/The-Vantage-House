@@ -4,13 +4,12 @@ import in.nimay.billingsoftware.filters.JwtRequestFilter;
 import in.nimay.billingsoftware.service.impl.AppUserDetailsService;
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -18,6 +17,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
@@ -41,17 +41,17 @@ public class SecurityConfig {
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
                         .requestMatchers("/error", "/error/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/login", "/auth/login", "/encode", "/admin/register").permitAll()
-                        .requestMatchers("/login/**", "/auth/**").permitAll()
-                        .requestMatchers("/categories/**", "/categories", "/admin/categories/**", "/admin/categories").permitAll()
-                        .requestMatchers("/category/**", "/category", "/items/**", "/items", "/admin/items/**", "/admin/items").permitAll()
-                        .requestMatchers("/admin/users/**", "/admin/users", "/users/**", "/users").permitAll()
-                        .requestMatchers("/orders/**", "/orders", "/admin/orders/**", "/admin/orders").permitAll()
+                        .requestMatchers("/login/**", "/auth/**", "/register/**", "/encode").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/categories/**", "/categories", "/items/**", "/items").permitAll()
+                        .requestMatchers("/orders/**", "/orders").permitAll()
+                        .requestMatchers("/admin/**", "/categories/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/items", "/items/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/items", "/items/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/items", "/items/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
-                ).sessionManagement(
-                        session ->
-                                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                                        .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -63,7 +63,7 @@ public class SecurityConfig {
     private UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("*"));
-        config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS","PATCH"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(false);
 

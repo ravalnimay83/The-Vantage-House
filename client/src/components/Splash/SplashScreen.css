@@ -1,0 +1,214 @@
+.splash-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: linear-gradient(145deg, #0f1b0e 0%, #1d351a 48%, #2d4c24 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    color: #ffffff;
+    overflow: hidden;
+    transition: opacity 0.45s ease;
+}
+
+.splash-overlay.fading-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.splash-ambient-glow {
+    position: absolute;
+    width: 340px;
+    height: 340px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(167, 243, 208, 0.2) 0%, rgba(45, 76, 36, 0) 70%);
+    pointer-events: none;
+}
+
+.splash-center-stage {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 440px;
+    width: 100%;
+}
+
+.splash-emoji-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.splash-emoji-roller {
+    width: 96px;
+    height: 96px;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1.5px solid rgba(255, 255, 255, 0.24);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 20px 44px rgba(0, 0, 0, 0.35);
+    animation: emojiRollIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.splash-emoji-main {
+    font-size: 3.1rem;
+    line-height: 1;
+}
+
+.splash-emoji-chip {
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #a7f3d0;
+    background: rgba(167, 243, 208, 0.14);
+    border: 1px solid rgba(167, 243, 208, 0.3);
+    padding: 4px 12px;
+    border-radius: 999px;
+}
+
+.splash-marquee-wrap {
+    width: 100%;
+    max-width: 340px;
+    overflow: hidden;
+    margin-bottom: 22px;
+    mask-image: linear-gradient(to right, transparent, black 16%, black 84%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 16%, black 84%, transparent);
+}
+
+.splash-marquee-track {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    width: max-content;
+    animation: emojiMarquee 7s linear infinite;
+}
+
+.splash-marquee-item {
+    font-size: 1.45rem;
+    opacity: 0.85;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25));
+}
+
+.splash-headline {
+    font-size: 2.05rem;
+    font-weight: 900;
+    letter-spacing: -0.6px;
+    margin: 0 0 8px 0;
+    background: linear-gradient(90deg, #ffffff 0%, #d1fae5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: splashTextIn 0.6s ease forwards;
+}
+
+.splash-tagline {
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.84);
+    letter-spacing: 0.3px;
+    margin: 0 0 20px 0;
+    animation: splashTextIn 0.7s ease 0.15s both;
+}
+
+.splash-progress-track {
+    width: 180px;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    overflow: hidden;
+}
+
+.splash-progress-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #34d399, #a7f3d0);
+    animation: splashProgress 3.1s linear forwards;
+}
+
+/* Static Brand Logo at the Bottom */
+.splash-static-footer {
+    position: absolute;
+    bottom: 26px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    opacity: 0.88;
+}
+
+.splash-static-logo-box {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.splash-static-logo-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.splash-static-brand {
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    color: #ffffff;
+}
+
+@keyframes emojiRollIn {
+    0% {
+        opacity: 0.35;
+        transform: translateY(14px) rotate(-10deg) scale(0.86);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) rotate(0deg) scale(1);
+    }
+}
+
+@keyframes emojiMarquee {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+@keyframes splashTextIn {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes splashProgress {
+    0% {
+        width: 0%;
+    }
+    100% {
+        width: 100%;
+    }
+}

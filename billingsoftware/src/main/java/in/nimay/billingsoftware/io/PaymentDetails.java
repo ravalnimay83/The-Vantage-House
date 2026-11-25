@@ -14,5 +14,8 @@ public class PaymentDetails {
     private String paymentMethod;
     private String status;
     private String transactionId;
+    private String razorpayOrderId;
+    private String razorpayPaymentId;
+    private String paymentChannel;
 
 }

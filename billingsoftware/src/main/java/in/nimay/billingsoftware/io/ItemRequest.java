@@ -15,8 +15,14 @@ public class ItemRequest {
 
     private String name;
     private BigDecimal price;
+    private BigDecimal originalPrice;
     private String categoryId;
     private String description;
+    private String brand;
+    private String sizes;
+    private String color;
+    private String fabric;
+    private Integer stock;
     private String imageUrl;
     private String imgUrl;
 
