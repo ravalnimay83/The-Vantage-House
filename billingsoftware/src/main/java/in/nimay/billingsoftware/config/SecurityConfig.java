@@ -46,6 +46,7 @@ public class SecurityConfig {
                         .requestMatchers("/categories/**", "/categories", "/admin/categories/**", "/admin/categories").permitAll()
                         .requestMatchers("/category/**", "/category", "/items/**", "/items", "/admin/items/**", "/admin/items").permitAll()
                         .requestMatchers("/admin/users/**", "/admin/users", "/users/**", "/users").permitAll()
+                        .requestMatchers("/orders/**", "/orders", "/admin/orders/**", "/admin/orders").permitAll()
                         .anyRequest().authenticated()
                 ).sessionManagement(
                         session ->
