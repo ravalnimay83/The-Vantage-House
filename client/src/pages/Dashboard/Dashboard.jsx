@@ -46,6 +46,35 @@ const Dashboard = () => {
     return (
         <div className="store-dashboard">
             <div className="store-container">
+                {/* Brand Heritage Banner */}
+                <div
+                    className="mb-3 rounded-4 overflow-hidden d-flex align-items-center justify-content-between px-3 py-2 flex-wrap gap-2"
+                    style={{
+                        background: "#1a3d29",
+                        border: "1px solid rgba(200, 146, 58, 0.45)",
+                        boxShadow: "0 10px 26px rgba(26, 61, 41, 0.16)",
+                    }}
+                >
+                    <img
+                        src={assets.primaryLogo}
+                        alt="The Vantage House"
+                        style={{ height: 64, maxWidth: "100%", objectFit: "contain" }}
+                    />
+                    <div className="d-flex align-items-center gap-2 ms-auto">
+                        <img
+                            src={assets.monogram}
+                            alt="Vantage Monogram"
+                            style={{
+                                width: 44,
+                                height: 44,
+                                borderRadius: "50%",
+                                objectFit: "cover",
+                                border: "1.5px solid #c8923a",
+                            }}
+                        />
+                    </div>
+                </div>
+
                 {/* Top Header & Search Bar */}
                 <div className="store-top-bar">
                     <div className="store-heading-group">

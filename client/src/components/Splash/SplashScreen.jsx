@@ -122,9 +122,12 @@ const SplashScreen = ({ onComplete }) => {
             {/* Static Brand Logo at the Bottom */}
             <div className="splash-static-footer">
                 <div className="splash-static-logo-box">
-                    <img src={assets.logo} alt="BizBill" />
+                    <img src={assets.monogram} alt="The Vantage House" />
                 </div>
-                <span className="splash-static-brand">BizBill</span>
+                <div className="splash-static-brand-group">
+                    <span className="splash-static-brand">THE VANTAGE HOUSE</span>
+                    <span className="splash-static-estd">ESTD 2024 · QUALITY APPAREL</span>
+                </div>
             </div>
         </div>
     );

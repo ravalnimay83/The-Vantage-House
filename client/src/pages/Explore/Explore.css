@@ -270,6 +270,115 @@
     display: none;
 }
 
+/* Slick Checkout Progress Bar */
+.checkout-progress-wrap {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.checkout-progress-track {
+    position: relative;
+    height: 4px;
+    background: #e5e7eb;
+    border-radius: 999px;
+    margin: 0 18px 8px;
+    overflow: hidden;
+}
+
+.checkout-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #1a3d29, #c8923a);
+    border-radius: 999px;
+    transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.checkout-progress-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+}
+
+.cp-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    color: #9ca3af;
+}
+
+.cp-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    border: 1.5px solid #d1d5db;
+    font-size: 0.68rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cp-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.cp-step.active {
+    color: #1a3d29;
+}
+
+.cp-step.active .cp-dot {
+    background: #1a3d29;
+    border-color: #c8923a;
+    color: #ffffff;
+}
+
+.cp-step.done {
+    color: #166534;
+}
+
+.cp-step.done .cp-dot {
+    background: #16a34a;
+    border-color: #16a34a;
+    color: #ffffff;
+}
+
+.confirmed-tracker-mini {
+    background: #f8faf8;
+    border: 1px solid #d1fae5;
+    border-radius: 12px;
+    padding: 10px 12px;
+}
+
+.confirmed-tracker-bar {
+    height: 5px;
+    background: #e5e7eb;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.confirmed-tracker-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #1a3d29, #16a34a);
+    border-radius: 999px;
+    transition: width 0.4s ease;
+}
+
+.confirmed-tracker-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #9ca3af;
+}
+
+.confirmed-tracker-labels .active {
+    color: #166534;
+}
+
 .explore-panel-header {
     display: flex;
     align-items: center;

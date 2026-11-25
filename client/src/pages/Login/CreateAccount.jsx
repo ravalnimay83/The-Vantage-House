@@ -267,12 +267,34 @@ const CreateAccount = () => {
         <div className="signup-page-wrapper">
             <div className="signup-card">
                 {/* Logo & Back to Home */}
-                <div className="signup-top-bar">
-                    <img src={assets.logo} alt="BizBill" height="36" />
-                    <Link to="/dashboard" className="auth-back-home">
-                        <i className="bi bi-arrow-left"></i>
-                        Continue as Guest
-                    </Link>
+                <div className="signup-top-bar flex-column align-items-stretch gap-2">
+                    <div className="d-flex justify-content-between align-items-center">
+                        <img
+                            src={assets.monogram}
+                            alt="The Vantage House"
+                            style={{ width: 34, height: 34, borderRadius: "50%", objectFit: "cover", border: "1.5px solid #c8923a" }}
+                        />
+                        <Link to="/dashboard" className="auth-back-home">
+                            <i className="bi bi-arrow-left"></i>
+                            Continue as Guest
+                        </Link>
+                    </div>
+                    <div
+                        style={{
+                            background: "#1a3d29",
+                            borderRadius: "14px",
+                            padding: "8px 12px",
+                            border: "1px solid rgba(200, 146, 58, 0.45)",
+                            display: "flex",
+                            justifyContent: "center",
+                        }}
+                    >
+                        <img
+                            src={assets.primaryLogo}
+                            alt="The Vantage House Quality Apparel"
+                            style={{ width: "100%", maxHeight: 74, objectFit: "contain" }}
+                        />
+                    </div>
                 </div>
 
                 {/* Progress Indicator */}

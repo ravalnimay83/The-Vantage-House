@@ -13,10 +13,41 @@
     align-items: center;
     gap: 10px;
     text-decoration: none;
-    color: #111827;
+    color: #1a3d29;
     font-weight: 800;
-    font-size: 1.2rem;
-    letter-spacing: -0.3px;
+    font-size: 1.05rem;
+    letter-spacing: -0.2px;
+}
+
+.vantage-nav-monogram {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid #c8923a;
+    box-shadow: 0 2px 8px rgba(26, 61, 41, 0.18);
+    flex-shrink: 0;
+}
+
+.vantage-nav-wordmark {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.05;
+}
+
+.vantage-nav-name {
+    font-size: 0.96rem;
+    font-weight: 900;
+    letter-spacing: 0.6px;
+    color: #1a3d29;
+}
+
+.vantage-nav-sub {
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+    color: #b47d28;
+    margin-top: 2px;
 }
 
 .bizbill-nav-link {
@@ -219,19 +250,17 @@
     .mobile-bottom-nav {
         position: fixed;
         bottom: 12px;
-        left: 14px;
-        right: 14px;
-        height: 62px;
-        background: rgba(255, 255, 255, 0.96);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid #e5e7eb;
+        left: 12px;
+        right: 12px;
+        height: 64px;
+        background: #f6f2e9;
+        border: 2px solid #c8923a;
         border-radius: 999px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.14);
+        box-shadow: 0 12px 32px rgba(17, 34, 23, 0.24);
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: 1fr 1fr 78px 1fr 1fr;
         align-items: center;
-        padding: 0 8px;
+        padding: 0 10px;
         z-index: 1040;
     }
 
@@ -244,41 +273,81 @@
         text-decoration: none;
         border: none;
         background: transparent;
-        color: #6b7280;
-        font-size: 11px;
-        font-weight: 600;
-        padding: 6px 4px;
+        color: #1a3d29;
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: 0.6px;
+        padding: 4px 2px;
         border-radius: 999px;
         position: relative;
         cursor: pointer;
-        transition: all 0.18s ease;
+        transition: transform 0.16s ease, opacity 0.16s ease;
     }
 
     .mobile-nav-item i {
-        font-size: 1.2rem;
+        font-size: 1.25rem;
         line-height: 1;
+        color: #1a3d29;
     }
 
     .mobile-nav-item.active {
-        color: #111827;
-        font-weight: 800;
+        color: #1a3d29;
+        font-weight: 900;
     }
 
-    .mobile-nav-item.active i {
-        color: #2d4c24;
+    .mobile-nav-star {
+        font-size: 9px;
+        line-height: 1;
+        color: #c8923a;
+        margin-top: -1px;
     }
 
-    .mobile-nav-ai-icon {
-        width: 34px;
-        height: 34px;
+    .mobile-nav-center-v {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        background: transparent;
+        border: none;
+        padding: 0;
+        margin-top: -26px;
+        cursor: pointer;
+        position: relative;
+        z-index: 2;
+    }
+
+    .mobile-v-crest {
+        width: 62px;
+        height: 62px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #1b2c19, #4a6b3b);
-        color: #ffffff !important;
+        background: #1a3d29;
+        border: 2.5px solid #c8923a;
+        padding: 3px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1rem !important;
-        box-shadow: 0 4px 12px rgba(45, 76, 36, 0.3);
+        box-shadow: 0 8px 20px rgba(26, 61, 41, 0.35), 0 0 0 4px #f6f2e9;
+        overflow: hidden;
+        transition: transform 0.18s ease;
+    }
+
+    .mobile-nav-center-v:active .mobile-v-crest {
+        transform: scale(0.95);
+    }
+
+    .mobile-v-crest img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .mobile-v-label {
+        margin-top: 3px;
+        font-size: 8.5px;
+        font-weight: 900;
+        letter-spacing: 1px;
+        color: #1a3d29;
     }
 
     .mobile-nav-badge {

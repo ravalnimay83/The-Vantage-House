@@ -25,8 +25,15 @@ const Menubar = () => {
             <nav className="navbar navbar-expand-lg bizbill-navbar">
                 <div className="container-fluid px-1">
                     <Link className="bizbill-brand me-lg-4" to="/dashboard">
-                        <img src={assets.logo} alt="BizBill Logo" height="34" />
-                        <span>BizBill</span>
+                        <img
+                            src={assets.monogram}
+                            alt="The Vantage House"
+                            className="vantage-nav-monogram"
+                        />
+                        <div className="vantage-nav-wordmark">
+                            <span className="vantage-nav-name">THE VANTAGE HOUSE</span>
+                            <span className="vantage-nav-sub">QUALITY APPAREL</span>
+                        </div>
                     </Link>
 
                     {/* Quick Auth / Menu Toggle on Mobile */}
@@ -161,34 +168,46 @@ const Menubar = () => {
                 </div>
             </nav>
 
-            {/* Mobile Bottom Navigation: Home -> AI -> Cart -> Profile */}
+            {/* Mobile Bottom Navigation: Heritage Vantage Pill */}
             <div className="mobile-bottom-nav">
                 <Link
                     to="/dashboard"
                     className={`mobile-nav-item ${location.pathname === "/dashboard" ? "active" : ""}`}
                 >
                     <i className="bi bi-house-door-fill"></i>
-                    <span>Home</span>
+                    <span>HOME</span>
+                    {location.pathname === "/dashboard" && <span className="mobile-nav-star">★</span>}
+                </Link>
+
+                <Link
+                    to="/products"
+                    className={`mobile-nav-item ${location.pathname === "/products" ? "active" : ""}`}
+                >
+                    <i className="bi bi-handbag-fill"></i>
+                    <span>SHOP</span>
+                    {location.pathname === "/products" && <span className="mobile-nav-star">★</span>}
                 </Link>
 
                 <button
                     type="button"
-                    className="mobile-nav-item"
+                    className="mobile-nav-center-v"
                     onClick={handleAiClick}
+                    aria-label="Vantage AI (Coming Soon)"
                 >
-                    <span className="mobile-nav-ai-icon">
-                        <i className="bi bi-stars"></i>
+                    <span className="mobile-v-crest">
+                        <img src={assets.favicon} alt="Vantage AI" />
                     </span>
-                    <span>AI</span>
+                    <span className="mobile-v-label">VANTAGE</span>
                 </button>
 
                 <Link
                     to="/explore"
                     className={`mobile-nav-item ${location.pathname === "/explore" ? "active" : ""}`}
                 >
-                    <i className="bi bi-bag-fill"></i>
+                    <i className="bi bi-basket2-fill"></i>
                     {cartCount > 0 && <span className="mobile-nav-badge">{cartCount}</span>}
-                    <span>Cart</span>
+                    <span>BAG</span>
+                    {location.pathname === "/explore" && <span className="mobile-nav-star">★</span>}
                 </Link>
 
                 <Link
@@ -207,9 +226,12 @@ const Menubar = () => {
                             className={`mobile-profile-avatar ${isAdmin ? "admin-ring" : ""}`}
                         />
                     ) : (
-                        <i className={`bi ${isAdmin ? "bi-shield-fill-check text-warning" : "bi-person-fill"}`}></i>
+                        <i className={`bi ${isAdmin ? "bi-shield-fill-check" : "bi-shield-fill"}`}></i>
                     )}
-                    <span>{isLoggedIn ? (isAdmin ? "Admin" : "Profile") : "Sign In"}</span>
+                    <span>{isLoggedIn ? (isAdmin ? "ADMIN" : "ACCOUNT") : "SIGN IN"}</span>
+                    {(location.pathname === "/profile" || location.pathname === "/login") && (
+                        <span className="mobile-nav-star">★</span>
+                    )}
                 </Link>
             </div>
         </>

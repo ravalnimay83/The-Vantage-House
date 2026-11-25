@@ -10,6 +10,7 @@ import {
     createRazorpayOrder,
     verifyRazorpayPayment,
 } from "../../Service/OrderService.js";
+import OrderPackingCeremony from "../../components/OrderCelebration/OrderPackingCeremony.jsx";
 import { assets } from "../../assets/assets.js";
 
 const FREE_DELIVERY_THRESHOLD = 1999;
@@ -99,6 +100,7 @@ const Explore = () => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [paymentError, setPaymentError] = useState("");
     const [confirmedOrder, setConfirmedOrder] = useState(null);
+    const [showPackingCeremony, setShowPackingCeremony] = useState(false);
     const idempotencyKeyRef = useRef(null);
 
     const estimatedDelivery = useMemo(() => getEstimatedDeliveryDate(), []);
@@ -353,6 +355,7 @@ const Explore = () => {
     const finishConfirmedOrder = (orderData) => {
         setConfirmedOrder(orderData);
         setCheckoutStep("confirmed");
+        setShowPackingCeremony(true);
         clearCart();
         idempotencyKeyRef.current = null;
         if (reloadCatalog) reloadCatalog();
@@ -495,9 +498,23 @@ const Explore = () => {
     };
 
     const firstName = (confirmedOrder?.customerName || customerName || "Friend").split(" ")[0];
+    const checkoutStepIndex =
+        checkoutStep === "cart"
+            ? 0
+            : checkoutStep === "delivery"
+            ? 1
+            : checkoutStep === "payment"
+            ? 2
+            : 3;
 
     return (
         <div className="explore-shell">
+            {showPackingCeremony && (
+                <OrderPackingCeremony
+                    orderNumber={confirmedOrder?.orderNumber}
+                    onComplete={() => setShowPackingCeremony(false)}
+                />
+            )}
             {/* LEFT PANEL: ITEMS */}
             <section className="explore-left-panel">
                 <div className="explore-toolbar">
@@ -666,6 +683,33 @@ const Explore = () => {
                     />
                 </div>
 
+                {/* Slick 4-Step Checkout Progress Bar */}
+                <div className="checkout-progress-wrap" aria-label="Order progress">
+                    <div className="checkout-progress-track">
+                        <div
+                            className="checkout-progress-fill"
+                            style={{ width: `${(checkoutStepIndex / 3) * 100}%` }}
+                        />
+                    </div>
+                    <div className="checkout-progress-steps">
+                        {["Bag", "Delivery", "Payment", "Confirmed"].map((label, idx) => (
+                            <div
+                                key={label}
+                                className={`cp-step ${
+                                    idx < checkoutStepIndex
+                                        ? "done"
+                                        : idx === checkoutStepIndex
+                                        ? "active"
+                                        : ""
+                                }`}
+                            >
+                                <span className="cp-dot">{idx < checkoutStepIndex ? "✓" : idx + 1}</span>
+                                <span className="cp-label">{label}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
                 {/* STEP 4: ORDER CONFIRMED */}
                 {checkoutStep === "confirmed" && confirmedOrder ? (
                     <div className="explore-confirmed-card">
@@ -710,6 +754,18 @@ const Explore = () => {
                                     <strong>{formatInr(Number(ci.price) * ci.quantity)}</strong>
                                 </div>
                             ))}
+                        </div>
+
+                        <div className="confirmed-tracker-mini mb-3">
+                            <div className="confirmed-tracker-bar">
+                                <div className="confirmed-tracker-fill" style={{ width: "20%" }} />
+                            </div>
+                            <div className="confirmed-tracker-labels">
+                                <span className="active">✓ Confirmed</span>
+                                <span>Packed</span>
+                                <span>Shipped</span>
+                                <span>Delivered</span>
+                            </div>
                         </div>
 
                         <div className="confirmed-actions">

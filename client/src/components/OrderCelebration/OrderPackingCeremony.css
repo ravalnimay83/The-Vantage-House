@@ -1,0 +1,291 @@
+.vantage-ceremony-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: radial-gradient(circle at center, #234932 0%, #163020 65%, #0e2015 100%);
+    color: #f5f2eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow: hidden;
+    transition: opacity 0.4s ease;
+}
+
+.vantage-ceremony-overlay.phase-fadeout {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Tiny screen shake timed to stamp impact */
+.vantage-ceremony-overlay.phase-stamp {
+    animation: impactShake 0.35s cubic-bezier(0.36, 0.07, 0.19, 0.97) 0.42s both;
+}
+
+.ceremony-skip-btn {
+    position: absolute;
+    top: 20px;
+    right: 22px;
+    background: rgba(245, 242, 235, 0.12);
+    border: 1px solid rgba(200, 146, 58, 0.45);
+    color: #f5f2eb;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+/* PHASE 1: STAMP OF APPROVAL */
+.stamp-stage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.stamp-order-text {
+    font-size: 1.85rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    color: #f5f2eb;
+    text-transform: uppercase;
+    opacity: 0.9;
+}
+
+.stamp-order-num {
+    margin-top: 6px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #e2b463;
+}
+
+.vantage-stamp-slam {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: heavyStampSlam 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) 0.15s both;
+}
+
+.vantage-stamp-ring {
+    width: 146px;
+    height: 146px;
+    border-radius: 50%;
+    border: 4px dashed #c8923a;
+    background: rgba(26, 61, 41, 0.92);
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+}
+
+.vantage-stamp-ring img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.stamp-approved-ribbon {
+    position: absolute;
+    bottom: -10px;
+    background: #c8923a;
+    color: #162415;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    padding: 3px 12px;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* PHASE 2: THE BOX PACK */
+.packing-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    animation: fadeStageIn 0.35s ease forwards;
+}
+
+.packing-arch-svg {
+    width: 340px;
+    max-width: 92vw;
+    height: 90px;
+    margin-bottom: -8px;
+}
+
+.packing-arch-text {
+    fill: #f5f2eb;
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: 2.2px;
+}
+
+.packing-goods-stage {
+    position: relative;
+    width: 220px;
+    height: 210px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.flying-good {
+    position: absolute;
+    font-size: 2.2rem;
+    top: 8px;
+    opacity: 0;
+    z-index: 1;
+}
+
+.good-1 { left: 26px; animation: dropIntoBox 0.48s steps(5, end) 0.1s forwards; }
+.good-2 { right: 26px; animation: dropIntoBox 0.48s steps(5, end) 0.38s forwards; }
+.good-3 { left: 56px; animation: dropIntoBox 0.48s steps(5, end) 0.66s forwards; }
+.good-4 { right: 56px; animation: dropIntoBox 0.48s steps(5, end) 0.94s forwards; }
+
+.vantage-box-wrap {
+    position: relative;
+    width: 158px;
+    height: 112px;
+    z-index: 2;
+}
+
+.vantage-box-body {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #d8b589;
+    border: 3px solid #2b1d0e;
+    border-radius: 8px;
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.38);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.vantage-box-tape {
+    position: absolute;
+    top: 0;
+    width: 24px;
+    height: 22px;
+    background: rgba(245, 242, 235, 0.55);
+    border-left: 2px dashed #8c6b43;
+    border-right: 2px dashed #8c6b43;
+}
+
+.vantage-box-crest {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 2px solid #c8923a;
+    overflow: hidden;
+    background: #1a3d29;
+}
+
+.vantage-box-crest img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.vantage-box-label {
+    margin-top: 5px;
+    font-size: 0.62rem;
+    font-weight: 900;
+    letter-spacing: 1.4px;
+    color: #2b1d0e;
+}
+
+.vantage-box-flap {
+    position: absolute;
+    top: -18px;
+    width: 78px;
+    height: 22px;
+    background: #c59f71;
+    border: 3px solid #2b1d0e;
+    transition: transform 0.35s steps(4, end);
+}
+
+.flap-left {
+    left: 0;
+    border-radius: 6px 0 0 0;
+    transform-origin: bottom left;
+    transform: rotate(-38deg);
+}
+
+.flap-right {
+    right: 0;
+    border-radius: 0 6px 0 0;
+    transform-origin: bottom right;
+    transform: rotate(38deg);
+}
+
+.vantage-box-wrap.lids-closed .flap-left {
+    transform: rotate(0deg) translateY(15px);
+}
+
+.vantage-box-wrap.lids-closed .flap-right {
+    transform: rotate(0deg) translateY(15px);
+}
+
+.packing-sub-note {
+    margin-top: 16px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #e2b463;
+    letter-spacing: 0.5px;
+}
+
+@keyframes heavyStampSlam {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(2.6) rotate(-18deg);
+    }
+    70% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.95) rotate(-6deg);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1) rotate(-8deg);
+    }
+}
+
+@keyframes impactShake {
+    0%, 100% { transform: translate(0, 0); }
+    20% { transform: translate(-6px, 4px); }
+    40% { transform: translate(6px, -4px); }
+    60% { transform: translate(-4px, -3px); }
+    80% { transform: translate(4px, 3px); }
+}
+
+@keyframes dropIntoBox {
+    0% {
+        opacity: 1;
+        transform: translateY(-20px) scale(1.1) rotate(-12deg);
+    }
+    65% {
+        opacity: 1;
+        transform: translateY(70px) scale(0.9) rotate(8deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(105px) scale(0.5);
+    }
+}
+
+@keyframes fadeStageIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+}
