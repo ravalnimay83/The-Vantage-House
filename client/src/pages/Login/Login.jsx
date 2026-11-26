@@ -3,7 +3,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContextDefinition.js";
-import { triggerSplash } from "../../components/Splash/SplashScreen.jsx";
+import { triggerSplash, hideSplash } from "../../components/Splash/SplashScreen.jsx";
 import {
     checkIdentifier,
     login,
@@ -146,6 +146,7 @@ const Login = ({ initialMode = "identifier" }) => {
             return;
         }
         setLoading(true);
+        triggerSplash("Signing you in...");
         try {
             const response = await login({
                 identifier: loginId,
@@ -156,6 +157,7 @@ const Login = ({ initialMode = "identifier" }) => {
                 handleAuthSuccess(response.data);
             }
         } catch (error) {
+            hideSplash();
             const msg = error.response?.data?.message || "Incorrect password. Please try again.";
             toast.error(msg);
         } finally {

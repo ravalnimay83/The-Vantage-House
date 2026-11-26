@@ -21,9 +21,14 @@ const MARQUEE_EMOJIS = [
 
 const DEFAULT_SUBTITLE = "Fresh drops · Everyday fits · Zero effort";
 const SPLASH_EVENT = "bizbill:splash";
+const SPLASH_HIDE_EVENT = "bizbill:splash-hide";
 
 export const triggerSplash = (subtitle = DEFAULT_SUBTITLE) => {
     window.dispatchEvent(new CustomEvent(SPLASH_EVENT, { detail: { subtitle } }));
+};
+
+export const hideSplash = () => {
+    window.dispatchEvent(new CustomEvent(SPLASH_HIDE_EVENT));
 };
 
 const SplashScreen = ({ onComplete }) => {
@@ -62,10 +67,18 @@ const SplashScreen = ({ onComplete }) => {
         const handleTrigger = (e) => {
             startSplashCycle(e.detail?.subtitle || DEFAULT_SUBTITLE);
         };
+        const handleHide = () => {
+            if (timersRef.current.fade) clearTimeout(timersRef.current.fade);
+            if (timersRef.current.done) clearTimeout(timersRef.current.done);
+            setVisible(false);
+            setFadingOut(false);
+        };
 
         window.addEventListener(SPLASH_EVENT, handleTrigger);
+        window.addEventListener(SPLASH_HIDE_EVENT, handleHide);
         return () => {
             window.removeEventListener(SPLASH_EVENT, handleTrigger);
+            window.removeEventListener(SPLASH_HIDE_EVENT, handleHide);
             if (timersRef.current.fade) clearTimeout(timersRef.current.fade);
             if (timersRef.current.done) clearTimeout(timersRef.current.done);
         };

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { googleLogin } from "../../Service/AuthService.js";
+import { triggerSplash, hideSplash } from "../Splash/SplashScreen.jsx";
 import "./GoogleLoginButton.css";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
@@ -39,6 +40,7 @@ const GoogleLoginButton = ({ onSuccess, disabled }) => {
         const handleCredentialResponse = async (response) => {
             if (!response?.credential) return;
             setLoading(true);
+            triggerSplash("Signing you in with Google...");
             try {
                 const res = await googleLogin({ credential: response.credential });
                 if (res.status === 200 && res.data) {
@@ -46,6 +48,7 @@ const GoogleLoginButton = ({ onSuccess, disabled }) => {
                     onSuccess(res.data);
                 }
             } catch (err) {
+                hideSplash();
                 const msg = err.response?.data?.message || "Google sign-in failed.";
                 toast.error(msg);
                 console.error("Google login error:", err);
