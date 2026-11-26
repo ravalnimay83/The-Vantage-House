@@ -20,6 +20,11 @@ const Menubar = () => {
     const [dockMinimized, setDockMinimized] = useState(false);
     const lastScrollY = useRef(0);
 
+    const isAdminRouteActive =
+        location.pathname === "/items" ||
+        location.pathname === "/category" ||
+        location.pathname === "/users";
+
     useEffect(() => {
         setMenuOpen(false);
         setSearchOpen(false);
@@ -56,8 +61,129 @@ const Menubar = () => {
         <>
             {/* Sticky Heritage Top Bar */}
             <header className={`vantage-topbar ${isScrolled ? "scrolled" : ""}`}>
+                {/* DESKTOP NAVBAR (>= 992px): Full Nav Links + Brand + Actions */}
+                <div className="vantage-desktop-nav">
+                    <Link className="vantage-desktop-brand" to="/dashboard">
+                        <img
+                            src={assets.monogram}
+                            alt="The Vantage House"
+                            className="vantage-nav-monogram"
+                        />
+                        <div className="vantage-nav-wordmark">
+                            <span className="vantage-nav-name">THE VANTAGE HOUSE</span>
+                            <span className="vantage-nav-sub">QUALITY APPAREL</span>
+                        </div>
+                    </Link>
+
+                    <nav className="vantage-desktop-links">
+                        <NavLink to="/dashboard" className="vantage-nav-pill">
+                            Home
+                        </NavLink>
+                        <NavLink to="/products" className="vantage-nav-pill">
+                            Shop
+                        </NavLink>
+                        <NavLink to="/explore" className="vantage-nav-pill">
+                            Billing &amp; Bag {cartCount > 0 ? `(${cartCount})` : ""}
+                        </NavLink>
+
+                        {isAdmin && (
+                            <div className="dropdown">
+                                <button
+                                    type="button"
+                                    className={`vantage-nav-pill dropdown-toggle ${isAdminRouteActive ? "active" : ""}`}
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                >
+                                    <i className="bi bi-shield-fill-check me-1"></i>
+                                    Admin Access
+                                </button>
+                                <ul className="dropdown-menu shadow-sm border-0 rounded-4 mt-2">
+                                    <li>
+                                        <NavLink className="dropdown-item py-2" to="/items">
+                                            <i className="bi bi-box-seam me-2"></i>Manage Items
+                                        </NavLink>
+                                    </li>
+                                    <li>
+                                        <NavLink className="dropdown-item py-2" to="/category">
+                                            <i className="bi bi-tags me-2"></i>Manage Categories
+                                        </NavLink>
+                                    </li>
+                                    <li>
+                                        <NavLink className="dropdown-item py-2" to="/users">
+                                            <i className="bi bi-people me-2"></i>Manage Users
+                                        </NavLink>
+                                    </li>
+                                </ul>
+                            </div>
+                        )}
+                    </nav>
+
+                    <div className="vantage-desktop-actions">
+                        <button
+                            type="button"
+                            className="vantage-icon-btn"
+                            onClick={() => setSearchOpen((v) => !v)}
+                            aria-label="Search gear"
+                            title="Search"
+                        >
+                            <i className="bi bi-search"></i>
+                        </button>
+
+                        <Link
+                            to={isLoggedIn ? "/profile" : "/login"}
+                            className="vantage-icon-btn position-relative"
+                            aria-label="Wishlist"
+                            title="Wishlist"
+                        >
+                            <i className={`bi ${wishlistCount > 0 ? "bi-heart-fill" : "bi-heart"}`}></i>
+                            {wishlistCount > 0 && (
+                                <span className="vantage-wishlist-dot">{wishlistCount}</span>
+                            )}
+                        </Link>
+
+                        <button
+                            type="button"
+                            className="vantage-ai-pill"
+                            onClick={handleAiClick}
+                            title="Vantage AI"
+                        >
+                            <i className="bi bi-stars"></i>
+                            <span>Vantage AI</span>
+                        </button>
+
+                        {isLoggedIn ? (
+                            <Link
+                                to="/profile"
+                                className={`vantage-account-pill ${isAdmin ? "is-admin" : ""}`}
+                            >
+                                {auth.avatarUrl ? (
+                                    <img
+                                        src={auth.avatarUrl}
+                                        alt={auth.name || "Account"}
+                                        referrerPolicy="no-referrer"
+                                    />
+                                ) : (
+                                    <i className={`bi ${isAdmin ? "bi-shield-fill-check" : "bi-person-circle"}`}></i>
+                                )}
+                                <span className="text-truncate" style={{ maxWidth: 110 }}>
+                                    {auth.name || "Account"}
+                                </span>
+                            </Link>
+                        ) : (
+                            <div className="d-flex align-items-center gap-2">
+                                <Link to="/login" className="vantage-signin-pill">
+                                    Sign In
+                                </Link>
+                                <Link to="/signup" className="vantage-signup-pill">
+                                    Join
+                                </Link>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* MOBILE TOP BAR (< 992px): 3-Line Menu | Centered Wordmark | Search + Heart */}
                 <div className="vantage-topbar-inner">
-                    {/* Left: 3-Line Menu Trigger */}
                     <div className="vantage-topbar-left">
                         <button
                             type="button"
@@ -69,13 +195,11 @@ const Menubar = () => {
                         </button>
                     </div>
 
-                    {/* Center: Heritage Wordmark */}
                     <Link className="vantage-center-brand" to="/dashboard">
                         <span className="vantage-brand-main">THE VANTAGE HOUSE</span>
                         <span className="vantage-brand-script">House</span>
                     </Link>
 
-                    {/* Right: Search & Wishlist (No Bag on top) */}
                     <div className="vantage-topbar-right">
                         <button
                             type="button"
@@ -116,7 +240,7 @@ const Menubar = () => {
                     </form>
                 )}
 
-                {/* Slide-Down Navigation Drawer (3-line menu) */}
+                {/* Slide-Down Navigation Drawer (Mobile 3-line menu) */}
                 {menuOpen && (
                     <div className="vantage-drawer-menu">
                         <div className="vantage-drawer-links">
