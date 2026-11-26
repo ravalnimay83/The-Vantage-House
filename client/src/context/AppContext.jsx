@@ -80,9 +80,9 @@ export const AppContextProvider = (props) => {
         loadCatalogData();
     }, [loadCatalogData]);
 
-    // Sync profile on startup if logged in
+    // Sync profile on startup if logged in (skip while pendingGoogle spare-key setup)
     useEffect(() => {
-        if (!auth.token) return;
+        if (!auth.token || auth.passwordSet === false) return;
         fetchProfile()
             .then((res) => {
                 if (res.data) {
@@ -102,14 +102,14 @@ export const AppContextProvider = (props) => {
 
     useEffect(() => {
         localStorage.setItem("bizbill_cart", JSON.stringify(cart));
-        if (auth.token && cartHydratedRef.current) {
+        if (auth.token && auth.passwordSet !== false && cartHydratedRef.current) {
             syncServerCart(cart).catch(() => {});
         }
-    }, [cart, auth.token]);
+    }, [cart, auth.token, auth.passwordSet]);
 
     // Load & merge saved cart from user's account on login/startup
     useEffect(() => {
-        if (!auth.token) {
+        if (!auth.token || auth.passwordSet === false) {
             cartHydratedRef.current = false;
             return;
         }

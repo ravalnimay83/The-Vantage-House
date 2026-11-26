@@ -28,6 +28,8 @@ const GoogleIcon = () => (
 const GoogleLoginButton = ({ onSuccess, disabled }) => {
     const gsiButtonRef = useRef(null);
     const wrapperRef = useRef(null);
+    const onSuccessRef = useRef(onSuccess);
+    onSuccessRef.current = onSuccess;
     const [loading, setLoading] = useState(false);
     const [gsiReady, setGsiReady] = useState(false);
     const [showHint, setShowHint] = useState(false);
@@ -45,7 +47,7 @@ const GoogleLoginButton = ({ onSuccess, disabled }) => {
                 const res = await googleLogin({ credential: response.credential });
                 if (res.status === 200 && res.data) {
                     toast.success(`Welcome, ${res.data.name || res.data.email}!`);
-                    onSuccess(res.data);
+                    onSuccessRef.current(res.data);
                 }
             } catch (err) {
                 hideSplash();
@@ -96,7 +98,7 @@ const GoogleLoginButton = ({ onSuccess, disabled }) => {
                 return () => script.removeEventListener("load", renderGsiButton);
             }
         }
-    }, [onSuccess, lanIpBlocked]);
+    }, [lanIpBlocked]);
 
     return (
         <div ref={wrapperRef} className="google-auth-wrapper">
