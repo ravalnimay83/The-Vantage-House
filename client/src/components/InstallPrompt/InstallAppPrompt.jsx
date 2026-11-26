@@ -87,7 +87,7 @@ const InstallAppPrompt = ({ auth }) => {
 
             <div className="vantage-install-header">
                 <div className="vantage-install-crest">
-                    <img src={assets.monogram} alt="The Vantage House" />
+                    <img src={assets.appLogo} alt="The Vantage House" />
                 </div>
                 <div className="min-width-0">
                     <h6 className="vantage-install-title">Add The Vantage House to your apps</h6>

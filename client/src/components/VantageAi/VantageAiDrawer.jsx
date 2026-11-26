@@ -14,11 +14,32 @@ export const openVantageAi = (initialPrompt = "") => {
 };
 
 const QUICK_PROMPTS = [
-    "Suggest a casual club fit",
-    "Show items under ₹1500",
-    "Track my latest order",
-    "Open my bag",
+    "Suggest a casual club fit ✨",
+    "Show items under ₹1500 💸",
+    "Track my latest order 📦",
+    "Open my bag 🛍️",
 ];
+
+const INITIAL_MSG = {
+    role: "ai",
+    text: "Hey! 👋✨ Welcome to **Vantage AI**. Ask me for outfit pairings 🧥, budget picks 💸, add items straight to your bag 🛍️, or track your order 📦!",
+    items: [],
+};
+
+const renderFormattedText = (text) => {
+    if (!text) return null;
+    return text.split("\n").map((line, lineIdx) => (
+        <div key={lineIdx} className={lineIdx > 0 ? "mt-1" : ""}>
+            {line.split(/(\*\*[^*]+\*\*)/g).map((part, idx) =>
+                part.startsWith("**") && part.endsWith("**") ? (
+                    <strong key={idx}>{part.slice(2, -2)}</strong>
+                ) : (
+                    <span key={idx}>{part}</span>
+                )
+            )}
+        </div>
+    ));
+};
 
 const VantageAiDrawer = () => {
     const navigate = useNavigate();
@@ -27,13 +48,8 @@ const VantageAiDrawer = () => {
     const [open, setOpen] = useState(false);
     const [input, setInput] = useState("");
     const [sending, setSending] = useState(false);
-    const [messages, setMessages] = useState([
-        {
-            role: "ai",
-            text: "Hey! 👋✨ Welcome to Vantage AI. Ask me for outfit pairings 🧥, budget picks 💸, add items to your bag 🛍️, or track your order 📦!",
-            items: [],
-        },
-    ]);
+    const [addedMap, setAddedMap] = useState({});
+    const [messages, setMessages] = useState([INITIAL_MSG]);
     const listEndRef = useRef(null);
 
     const sendPrompt = async (promptText) => {
@@ -60,12 +76,11 @@ const VantageAiDrawer = () => {
             const data = res.data || {};
             const aiMsg = {
                 role: "ai",
-                text: data.reply || "Here is what I found for you.",
+                text: data.reply || "Got you! ✨",
                 items: Array.isArray(data.items) ? data.items : [],
             };
             setMessages((prev) => [...prev, aiMsg]);
 
-            // Execute structured AI action
             const action = data.action;
             if (action?.type === "ADD_TO_CART" && action.item) {
                 addToCart(action.item, 1, action.size || "M");
@@ -77,14 +92,14 @@ const VantageAiDrawer = () => {
                 setTimeout(() => {
                     setOpen(false);
                     navigate(action.path);
-                }, 650);
+                }, 700);
             }
         } catch {
             setMessages((prev) => [
                 ...prev,
                 {
                     role: "ai",
-                    text: "I couldn't reach the server right now. Please try again in a moment.",
+                    text: "I couldn't reach the server right now 😅. Give me a second and try again!",
                     items: [],
                 },
             ]);
@@ -109,7 +124,7 @@ const VantageAiDrawer = () => {
         if (open) {
             listEndRef.current?.scrollIntoView({ behavior: "smooth" });
         }
-    }, [messages, open]);
+    }, [messages, sending, open]);
 
     if (!open) return null;
 
@@ -121,24 +136,41 @@ const VantageAiDrawer = () => {
                 role="dialog"
                 aria-label="Vantage AI Stylist"
             >
+                {/* Header */}
                 <div className="vantage-ai-head">
                     <div className="d-flex align-items-center gap-2">
-                        <img src={assets.favicon} alt="V" className="vantage-ai-avatar" />
+                        <div className="vantage-ai-avatar-wrap">
+                            <img src={assets.appLogo} alt="V" className="vantage-ai-avatar" />
+                            <span className="vantage-ai-online-dot" />
+                        </div>
                         <div>
                             <div className="vantage-ai-title">VANTAGE AI</div>
                             <div className="vantage-ai-sub">Personal Stylist &amp; Concierge</div>
                         </div>
                     </div>
-                    <button
-                        type="button"
-                        className="vantage-ai-close"
-                        onClick={() => setOpen(false)}
-                        aria-label="Close"
-                    >
-                        ✕
-                    </button>
+                    <div className="d-flex align-items-center gap-2">
+                        {messages.length > 1 && (
+                            <button
+                                type="button"
+                                className="vantage-ai-clear-btn"
+                                onClick={() => setMessages([INITIAL_MSG])}
+                                title="New chat"
+                            >
+                                Clear
+                            </button>
+                        )}
+                        <button
+                            type="button"
+                            className="vantage-ai-close"
+                            onClick={() => setOpen(false)}
+                            aria-label="Close"
+                        >
+                            ✕
+                        </button>
+                    </div>
                 </div>
 
+                {/* Quick Chips */}
                 <div className="vantage-ai-quick-row">
                     {QUICK_PROMPTS.map((qp) => (
                         <button
@@ -152,72 +184,91 @@ const VantageAiDrawer = () => {
                     ))}
                 </div>
 
+                {/* Messages */}
                 <div className="vantage-ai-messages">
                     {messages.map((m, idx) => (
                         <div key={idx} className={`vantage-ai-msg ${m.role}`}>
-                            <div className="vantage-ai-bubble">{m.text}</div>
+                            <div className="vantage-ai-bubble">
+                                {renderFormattedText(m.text)}
+                            </div>
 
                             {m.items && m.items.length > 0 && (
                                 <div className="vantage-ai-items-grid">
-                                    {m.items.map((item) => (
-                                        <div key={item.itemId} className="vantage-ai-item-card">
-                                            <img
-                                                src={item.imageUrl || assets.upload}
-                                                alt={item.name}
-                                                onError={(e) => {
-                                                    e.currentTarget.onerror = null;
-                                                    e.currentTarget.src = assets.upload;
-                                                }}
-                                            />
-                                            <div className="vantage-ai-item-meta">
-                                                <div className="vantage-ai-item-name" title={item.name}>
-                                                    {item.name}
+                                    {m.items.map((item) => {
+                                        const isAdded = Boolean(addedMap[item.itemId]);
+                                        return (
+                                            <div key={item.itemId} className="vantage-ai-item-card">
+                                                <img
+                                                    src={item.imageUrl || assets.upload}
+                                                    alt={item.name}
+                                                    onError={(e) => {
+                                                        e.currentTarget.onerror = null;
+                                                        e.currentTarget.src = assets.upload;
+                                                    }}
+                                                />
+                                                <div className="vantage-ai-item-meta">
+                                                    <div className="vantage-ai-item-name" title={item.name}>
+                                                        {item.name}
+                                                    </div>
+                                                    <div className="vantage-ai-item-price">
+                                                        &#8377;{Number(item.price || 0).toLocaleString("en-IN")}
+                                                    </div>
                                                 </div>
-                                                <div className="vantage-ai-item-price">
-                                                    &#8377;{Number(item.price || 0).toLocaleString("en-IN")}
-                                                </div>
+                                                <button
+                                                    type="button"
+                                                    className={`vantage-ai-add-btn ${isAdded ? "added" : ""}`}
+                                                    onClick={() => {
+                                                        addToCart(item, 1, "M");
+                                                        setAddedMap((p) => ({ ...p, [item.itemId]: true }));
+                                                        toast.success(`Added ${item.name} to bag`);
+                                                    }}
+                                                >
+                                                    {isAdded ? "✓ Added" : "Add"}
+                                                </button>
                                             </div>
-                                            <button
-                                                type="button"
-                                                className="vantage-ai-add-btn"
-                                                onClick={() => {
-                                                    addToCart(item, 1, "M");
-                                                    toast.success(`Added ${item.name} to bag`);
-                                                }}
-                                            >
-                                                Add
-                                            </button>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>
                     ))}
                     {sending && (
                         <div className="vantage-ai-msg ai">
-                            <div className="vantage-ai-bubble opacity-75">Thinking…</div>
+                            <div className="vantage-ai-bubble vantage-ai-typing">
+                                <span />
+                                <span />
+                                <span />
+                            </div>
                         </div>
                     )}
                     <div ref={listEndRef} />
                 </div>
 
+                {/* Floating Input Pill */}
                 <form
-                    className="vantage-ai-input-bar"
+                    className="vantage-ai-input-wrap"
                     onSubmit={(e) => {
                         e.preventDefault();
                         sendPrompt(input);
                     }}
                 >
-                    <input
-                        type="text"
-                        placeholder="Ask Vantage AI to style, search, or add to bag..."
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        autoFocus
-                    />
-                    <button type="submit" disabled={sending || !input.trim()}>
-                        Send
-                    </button>
+                    <div className="vantage-ai-input-bar">
+                        <input
+                            type="text"
+                            placeholder="Ask Vantage AI anything..."
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            autoFocus
+                        />
+                        <button
+                            type="submit"
+                            className="vantage-ai-send-btn"
+                            disabled={sending || !input.trim()}
+                            aria-label="Send"
+                        >
+                            <i className="bi bi-arrow-up"></i>
+                        </button>
+                    </div>
                 </form>
             </aside>
         </div>
