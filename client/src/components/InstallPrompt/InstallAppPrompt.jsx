@@ -3,7 +3,7 @@ import { assets } from "../../assets/assets.js";
 import "./InstallAppPrompt.css";
 
 const InstallAppPrompt = ({ auth }) => {
-    const [deferredPrompt, setDeferredPrompt] = useState(null);
+    const [deferredPrompt, setDeferredPrompt] = useState(() => window.__vantageDeferredPrompt || null);
     const [visible, setVisible] = useState(false);
     const [showManualHint, setShowManualHint] = useState(false);
 
@@ -12,12 +12,17 @@ const InstallAppPrompt = ({ auth }) => {
     const storageKey = `vantage_install_prompt_seen_${userScope}`;
 
     useEffect(() => {
+        if (window.__vantageDeferredPrompt && !deferredPrompt) {
+            setDeferredPrompt(window.__vantageDeferredPrompt);
+        }
         const handleBeforeInstall = (e) => {
             e.preventDefault();
+            window.__vantageDeferredPrompt = e;
             setDeferredPrompt(e);
         };
         const handleAppInstalled = () => {
             localStorage.setItem(storageKey, "1");
+            window.__vantageDeferredPrompt = null;
             setDeferredPrompt(null);
             setVisible(false);
         };
@@ -27,7 +32,7 @@ const InstallAppPrompt = ({ auth }) => {
             window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
             window.removeEventListener("appinstalled", handleAppInstalled);
         };
-    }, [storageKey]);
+    }, [storageKey, deferredPrompt]);
 
     useEffect(() => {
         if (!isLoggedIn) {
@@ -82,7 +87,7 @@ const InstallAppPrompt = ({ auth }) => {
 
             <div className="vantage-install-header">
                 <div className="vantage-install-crest">
-                    <img src={assets.favicon} alt="The Vantage House" />
+                    <img src={assets.monogram} alt="The Vantage House" />
                 </div>
                 <div className="min-width-0">
                     <h6 className="vantage-install-title">Add The Vantage House to your apps</h6>

@@ -10,6 +10,12 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 
 import {AppContextProvider} from "./context/AppContext.jsx";
 
+window.__vantageDeferredPrompt = null;
+window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    window.__vantageDeferredPrompt = e;
+});
+
 if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
         navigator.serviceWorker.register("/sw.js").catch(() => {});
