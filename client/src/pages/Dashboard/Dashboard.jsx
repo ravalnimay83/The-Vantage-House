@@ -1,32 +1,54 @@
 import './Dashboard.css';
-import { useContext, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContextDefinition.js";
 import { assets } from "../../assets/assets.js";
 import ProductQuickView from "../../components/ProductQuickView/ProductQuickView.jsx";
+import { openVantageAi } from "../../components/VantageAi/VantageAiDrawer.jsx";
 import toast from "react-hot-toast";
 
 const Dashboard = () => {
-    const { auth, categories, items, addToCart, wishlist, toggleWishlist } = useContext(AppContext);
+    const { auth, categories, items, wishlist, toggleWishlist } = useContext(AppContext);
     const [searchQuery, setSearchQuery] = useState("");
     const [activeChip, setActiveChip] = useState("all");
     const [quickViewItem, setQuickViewItem] = useState(null);
+    const [heroSlideIdx, setHeroSlideIdx] = useState(0);
+
+    // Quiet Vantage AI strip state
+    const [aiPrompt, setAiPrompt] = useState("");
+    const [aiReply, setAiReply] = useState("");
+    const [newsletterEmail, setNewsletterEmail] = useState("");
     const navigate = useNavigate();
 
     const safeCategories = Array.isArray(categories) ? categories : [];
     const safeItems = Array.isArray(items) ? items : [];
-    const firstName = auth?.name ? auth.name.split(" ")[0].toUpperCase() : null;
+    const firstName = auth?.name ? auth.name.split(" ")[0] : null;
 
-    const featuredItem = safeItems[0] || null;
+    // 1. Hero slowly cross-fades between 2-3 drops
+    const heroDrops = useMemo(() => safeItems.slice(0, 3), [safeItems]);
+    useEffect(() => {
+        if (heroDrops.length <= 1) return;
+        const timer = setInterval(() => {
+            setHeroSlideIdx((prev) => (prev + 1) % heroDrops.length);
+        }, 4500);
+        return () => clearInterval(timer);
+    }, [heroDrops.length]);
+
+    // 3. The Vantage Special (4 featured items) & 4. New Arrivals (latest 8 items)
+    const vantageSpecialItems = useMemo(() => {
+        const featured = safeItems.filter((it) => it.featured);
+        return (featured.length >= 4 ? featured : safeItems).slice(0, 4);
+    }, [safeItems]);
+
+    const newArrivalItems = useMemo(() => {
+        const markedNew = safeItems.filter((it) => it.isNew || it.newArrival);
+        return (markedNew.length > 0 ? markedNew : safeItems).slice(0, 8);
+    }, [safeItems]);
 
     const handleSearchSubmit = (e) => {
         e.preventDefault();
         const trimmed = searchQuery.trim();
-        if (trimmed) {
-            navigate(`/products?search=${encodeURIComponent(trimmed)}`);
-        } else {
-            navigate("/products");
-        }
+        navigate(trimmed ? `/products?search=${encodeURIComponent(trimmed)}` : "/products");
     };
 
     const handleCategoryClick = (categoryId) => {
@@ -36,42 +58,110 @@ const Dashboard = () => {
         }
     };
 
-    const handleQuickAdd = (e, item) => {
-        e.stopPropagation();
-        addToCart(item, 1, "M");
-        toast.success(`${item.name} added to bag`);
-    };
-
     const handleWishlistClick = (e, itemId) => {
         e.stopPropagation();
         toggleWishlist(itemId);
     };
 
+    const handleAskVantageAi = (e) => {
+        e.preventDefault();
+        const q = aiPrompt.trim();
+        if (!q) {
+            openVantageAi();
+            return;
+        }
+        openVantageAi(q);
+        setAiPrompt("");
+    };
+
+    const handleNewsletterSubmit = (e) => {
+        e.preventDefault();
+        if (!newsletterEmail.trim() || !newsletterEmail.includes("@")) {
+            toast.error("Please enter a valid email address.");
+            return;
+        }
+        toast.success("Welcome to The Vantage House dispatch.");
+        setNewsletterEmail("");
+    };
+
+    const renderUniformCard = (item, showNewLabel = false) => {
+        const isWishlisted = wishlist.includes(item.itemId);
+        return (
+            <div
+                key={item.itemId}
+                className="vantage-uniform-card"
+                onClick={() => setQuickViewItem(item)}
+            >
+                <div className="vantage-uniform-media">
+                    <img
+                        src={item.imageUrl || assets.upload}
+                        alt={item.name}
+                        className="vantage-img-primary"
+                        onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = assets.upload;
+                        }}
+                    />
+                    {showNewLabel && <span className="vantage-new-label">New</span>}
+                    <button
+                        type="button"
+                        className={`vantage-card-heart ${isWishlisted ? "wishlisted" : ""}`}
+                        title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                        onClick={(e) => handleWishlistClick(e, item.itemId)}
+                    >
+                        <i className={`bi ${isWishlisted ? "bi-heart-fill" : "bi-heart"}`}></i>
+                    </button>
+                </div>
+
+                <div className="vantage-uniform-body">
+                    <h5 className="vantage-uniform-title" title={item.name}>
+                        {item.name}
+                    </h5>
+                    <div className="vantage-uniform-price">
+                        &#8377;{Number(item.price || 0).toLocaleString("en-IN")}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    const renderSkeletonRow = (count) =>
+        Array.from({ length: count }).map((_, idx) => (
+            <div key={idx} className="vantage-uniform-card skeleton-card">
+                <div className="vantage-uniform-media skeleton-shimmer" />
+                <div className="vantage-uniform-body">
+                    <div className="skeleton-line w-75 mb-2" />
+                    <div className="skeleton-line w-50" />
+                </div>
+            </div>
+        ));
+
     return (
         <div className="store-dashboard">
             <div className="store-container">
-                {/* Heritage Split Welcome Hero Card */}
-                <div className="vantage-hero-card">
+                {/* 1. HERO */}
+                <section className="vantage-hero-card">
                     <div className="vantage-hero-split">
                         <div className="vantage-hero-frame">
-                            <h1 className="vantage-hero-title">
-                                {firstName ? `WELCOME BACK, ${firstName}` : "WELCOME TO THE HOUSE"}
-                            </h1>
-                            <p className="vantage-hero-sub">★ YOUR NEXT CLUB FIT IS READY ★</p>
+                            <p className="vantage-hero-calm-greeting">
+                                {firstName ? `Welcome back, ${firstName}.` : "Welcome to The Vantage House."}
+                            </p>
+                            <h1 className="vantage-hero-title">YOUR NEXT CLUB FIT IS READY</h1>
 
                             <div className="vantage-hero-cta-row">
                                 <Link to="/products" className="vantage-cta-cream">
-                                    SHOP NEW DROP
+                                    Shop Collection
                                 </Link>
                                 <Link to="/explore" className="vantage-cta-outline">
-                                    OPEN BAG &amp; BILLING
+                                    Open Bag
                                 </Link>
                             </div>
 
                             <form className="vantage-hero-search" onSubmit={handleSearchSubmit}>
+                                <i className="bi bi-search text-muted"></i>
                                 <input
                                     type="text"
-                                    placeholder="SEARCH FOR VINTAGE GEAR..."
+                                    placeholder="Search tees, shirts, trousers..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                 />
@@ -86,43 +176,43 @@ const Dashboard = () => {
                             </form>
                         </div>
 
-                        {featuredItem && (
-                            <div
-                                className="vantage-hero-visual"
-                                onClick={() => setQuickViewItem(featuredItem)}
-                            >
-                                <img
-                                    src={featuredItem.imageUrl || assets.upload}
-                                    alt={featuredItem.name}
-                                    onError={(e) => {
-                                        e.currentTarget.onerror = null;
-                                        e.currentTarget.src = assets.upload;
-                                    }}
-                                />
-                                <div className="vantage-hero-ribbon">NEW DROP ✦ EXCLUSIVE</div>
-                                <div className="vantage-hero-stamp">
-                                    <img src={assets.monogram} alt="Vantage Stamp" />
-                                </div>
-                            </div>
-                        )}
+                        <div className="vantage-hero-visual">
+                            {heroDrops.length > 0 ? (
+                                heroDrops.map((drop, idx) => (
+                                    <img
+                                        key={drop.itemId}
+                                        src={drop.imageUrl || assets.upload}
+                                        alt={drop.name}
+                                        className={`vantage-hero-slide ${idx === heroSlideIdx ? "active" : ""}`}
+                                        onClick={() => setQuickViewItem(drop)}
+                                        onError={(e) => {
+                                            e.currentTarget.onerror = null;
+                                            e.currentTarget.src = assets.upload;
+                                        }}
+                                    />
+                                ))
+                            ) : (
+                                <div className="skeleton-shimmer w-100 h-100" />
+                            )}
+                        </div>
                     </div>
-                </div>
+                </section>
 
-                {/* Category Filter Pills */}
-                <div className="vantage-pills-row">
+                {/* 2. CATEGORY CHIPS */}
+                <section className="vantage-pills-row">
                     <button
                         type="button"
                         className={`vantage-pill ${activeChip === "all" ? "active" : ""}`}
                         onClick={() => handleCategoryClick("all")}
                     >
-                        ALL DROPS <span className="pill-star">✦</span>
+                        All Drops
                     </button>
                     <button
                         type="button"
                         className={`vantage-pill ${activeChip === "new" ? "active" : ""}`}
                         onClick={() => navigate("/products")}
                     >
-                        NEW ARRIVALS
+                        New Arrivals
                     </button>
                     {safeCategories.map((cat) => (
                         <button
@@ -131,161 +221,115 @@ const Dashboard = () => {
                             className={`vantage-pill ${activeChip === cat.categoryId ? "active" : ""}`}
                             onClick={() => handleCategoryClick(cat.categoryId)}
                         >
-                            {(cat.name || cat.categoryName || "").toUpperCase()}
+                            {cat.name || cat.categoryName}
                         </button>
                     ))}
-                </div>
+                </section>
 
-                {/* THE VANTAGE SPECIAL Featured Card */}
-                {featuredItem && (
-                    <div className="vantage-special-section">
-                        <div className="vantage-section-head">
-                            <h3>THE VANTAGE SPECIAL</h3>
-                            <Link to="/products" className="vantage-view-link">
-                                VIEW ALL ›
-                            </Link>
-                        </div>
-
-                        <div
-                            className="vantage-special-card"
-                            onClick={() => setQuickViewItem(featuredItem)}
-                        >
-                            <div className="vantage-special-media">
-                                <img
-                                    src={featuredItem.imageUrl || assets.upload}
-                                    alt={featuredItem.name}
-                                    onError={(e) => {
-                                        e.currentTarget.onerror = null;
-                                        e.currentTarget.src = assets.upload;
-                                    }}
-                                />
-                                <span className="vantage-new-drop-badge">NEW DROP</span>
-                            </div>
-
-                            <div className="vantage-special-overlay">
-                                <div className="vantage-special-info">
-                                    <h4>{featuredItem.name}</h4>
-                                    <div className="vantage-special-price">
-                                        &#8377;{Number(featuredItem.price || 0).toLocaleString("en-IN")} /{" "}
-                                        <span className="exclusive-tag">✦ EXCLUSIVE ✦</span>
-                                    </div>
-                                </div>
-                                <button
-                                    type="button"
-                                    className="vantage-add-bag-btn"
-                                    onClick={(e) => handleQuickAdd(e, featuredItem)}
-                                >
-                                    ADD TO BAG
-                                </button>
-                            </div>
-                        </div>
+                {/* 3. THE VANTAGE SPECIAL (Row of 4) */}
+                <section className="vantage-home-section">
+                    <div className="vantage-section-head">
+                        <h3>The Vantage Special</h3>
+                        <Link to="/products" className="vantage-view-link">
+                            View all
+                        </Link>
                     </div>
-                )}
+                    <div className="vantage-row-4">
+                        {vantageSpecialItems.length > 0
+                            ? vantageSpecialItems.map((item) => renderUniformCard(item, false))
+                            : renderSkeletonRow(4)}
+                    </div>
+                </section>
 
-                {/* Shop by Category */}
-                <div className="vantage-section-head mt-4">
-                    <h3>SHOP BY CATEGORY</h3>
-                    <Link to="/products" className="vantage-view-link">
-                        FILTER &amp; SORT ›
-                    </Link>
-                </div>
+                {/* 4. NEW ARRIVALS (Horizontal row of latest 8) */}
+                <section className="vantage-home-section">
+                    <div className="vantage-section-head">
+                        <h3>New Arrivals</h3>
+                        <Link to="/products" className="vantage-view-link">
+                            View all
+                        </Link>
+                    </div>
+                    <div className="vantage-horizontal-row">
+                        {newArrivalItems.length > 0
+                            ? newArrivalItems.map((item) => renderUniformCard(item, true))
+                            : renderSkeletonRow(4)}
+                    </div>
+                </section>
 
-                <div className="store-categories-grid">
-                    {safeCategories.map((cat) => (
-                        <div
-                            key={cat.categoryId}
-                            className="store-category-card"
-                            onClick={() => handleCategoryClick(cat.categoryId)}
-                        >
-                            <img
-                                src={cat.imageUrl || assets.upload}
-                                alt={cat.name || cat.categoryName}
-                                className="store-category-thumb"
-                                onError={(e) => {
-                                    e.currentTarget.onerror = null;
-                                    e.currentTarget.src = assets.upload;
-                                }}
+                {/* 5. VANTAGE AI (Quiet Strip) */}
+                <section className="vantage-home-section">
+                    <div className="vantage-ai-strip">
+                        <div className="vantage-ai-strip-text">
+                            <h4>Not sure what to wear? Ask Vantage AI.</h4>
+                            <p>Describe the occasion or weather for an instant club pairing.</p>
+                        </div>
+                        <form className="vantage-ai-strip-form" onSubmit={handleAskVantageAi}>
+                            <input
+                                type="text"
+                                placeholder="e.g. Weekend coffee run in 24°C..."
+                                value={aiPrompt}
+                                onChange={(e) => setAiPrompt(e.target.value)}
                             />
-                            <div className="store-category-meta">
-                                <h6>{cat.name || cat.categoryName}</h6>
-                                <span>{cat.items ?? 0} Products</span>
-                            </div>
+                            <button type="submit">Ask</button>
+                        </form>
+                        {aiReply && <div className="vantage-ai-reply">{aiReply}</div>}
+                    </div>
+                </section>
+
+                {/* 6. OUR STORY */}
+                <section className="vantage-home-section">
+                    <div className="vantage-story-block">
+                        <div className="vantage-story-media">
+                            <img src={assets.primaryLogo} alt="The Vantage House Crest" />
                         </div>
-                    ))}
-                </div>
-
-                {/* Curated Drops Grid */}
-                <div className="vantage-section-head mt-4">
-                    <h3>CURATED DROPS</h3>
-                    <Link to="/explore" className="vantage-view-link">
-                        OPEN BAG ›
-                    </Link>
-                </div>
-
-                {safeItems.length === 0 ? (
-                    <div className="text-center py-5 bg-white rounded-4 border">
-                        <i className="bi bi-box-seam fs-1 text-muted d-block mb-2"></i>
-                        <p className="text-muted mb-0">No products available yet.</p>
+                        <div className="vantage-story-copy">
+                            <span className="vantage-story-kicker">Our Story</span>
+                            <h3>Quality clothing, made to last.</h3>
+                            <p>
+                                Rooted in timeless club tailoring and heavyweight fabrics, every piece at The Vantage House is crafted for everyday wear that ages with character.
+                            </p>
+                        </div>
                     </div>
-                ) : (
-                    <div className="store-products-grid">
-                        {safeItems.map((item) => {
-                            const isWishlisted = wishlist.includes(item.itemId);
-                            return (
-                                <div
-                                    key={item.itemId}
-                                    className="catalog-product-card"
-                                    onClick={() => setQuickViewItem(item)}
-                                >
-                                    <div className="catalog-card-img-box">
-                                        <img
-                                            src={item.imageUrl || assets.upload}
-                                            alt={item.name}
-                                            className="catalog-card-img"
-                                            onError={(e) => {
-                                                e.currentTarget.onerror = null;
-                                                e.currentTarget.src = assets.upload;
-                                            }}
-                                        />
-                                        <span className="catalog-card-badge">DROP</span>
-                                    </div>
+                </section>
 
-                                    <div className="catalog-card-body">
-                                        <span className="catalog-card-cat">
-                                            {item.categoryName || "Apparel"}
-                                        </span>
-                                        <h5 className="catalog-card-title" title={item.name}>
-                                            {item.name}
-                                        </h5>
-                                        <div className="catalog-card-footer">
-                                            <span className="catalog-card-price">
-                                                &#8377;{Number(item.price || 0).toLocaleString("en-IN")}
-                                            </span>
-                                            <div className="catalog-card-actions">
-                                                <button
-                                                    type="button"
-                                                    className={`catalog-icon-btn ${isWishlisted ? "wishlisted" : ""}`}
-                                                    title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-                                                    onClick={(e) => handleWishlistClick(e, item.itemId)}
-                                                >
-                                                    <i className={`bi ${isWishlisted ? "bi-heart-fill" : "bi-heart"}`}></i>
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    className="catalog-add-btn"
-                                                    title="Add to bag"
-                                                    onClick={(e) => handleQuickAdd(e, item)}
-                                                >
-                                                    <i className="bi bi-bag-plus-fill"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
+                {/* 7. FOOTER */}
+                <footer className="vantage-footer">
+                    <div className="vantage-footer-grid">
+                        <div>
+                            <div className="vantage-footer-brand">THE VANTAGE HOUSE</div>
+                            <p className="vantage-footer-note">
+                                Established 2024. Authentic &amp; original apparel designed for longevity.
+                            </p>
+                        </div>
+
+                        <div className="vantage-footer-links">
+                            <h6>House</h6>
+                            <Link to="/products">About</Link>
+                            <Link to="/explore">Delivery &amp; Returns</Link>
+                            <Link to="/profile">Size Guide</Link>
+                            <Link to="/profile">Contact</Link>
+                        </div>
+
+                        <div className="vantage-footer-links">
+                            <h6>Connect</h6>
+                            <a href="#instagram" onClick={(e) => e.preventDefault()}>Instagram</a>
+                            <a href="#x" onClick={(e) => e.preventDefault()}>X / Twitter</a>
+                        </div>
+
+                        <div>
+                            <h6 className="vantage-footer-news-title">Dispatch</h6>
+                            <form className="vantage-footer-news-form" onSubmit={handleNewsletterSubmit}>
+                                <input
+                                    type="email"
+                                    placeholder="Email for new drops"
+                                    value={newsletterEmail}
+                                    onChange={(e) => setNewsletterEmail(e.target.value)}
+                                />
+                                <button type="submit">Join</button>
+                            </form>
+                        </div>
                     </div>
-                )}
+                </footer>
             </div>
 
             {quickViewItem && (

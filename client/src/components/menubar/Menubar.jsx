@@ -3,6 +3,7 @@ import { assets } from "../../assets/assets.js";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useRef, useState } from "react";
 import { AppContext } from "../../context/AppContextDefinition.js";
+import { openVantageAi } from "../VantageAi/VantageAiDrawer.jsx";
 import toast from "react-hot-toast";
 
 const Menubar = () => {
@@ -47,7 +48,7 @@ const Menubar = () => {
     }, []);
 
     const handleAiClick = () => {
-        toast("Vantage AI Assistant is coming soon!", { icon: "✨" });
+        openVantageAi();
     };
 
     const handleNavSearchSubmit = (e) => {
@@ -70,8 +71,11 @@ const Menubar = () => {
                         <NavLink to="/products" className="vantage-nav-link-item">
                             SHOP
                         </NavLink>
-                        <NavLink to="/explore" className="vantage-nav-link-item">
-                            BAG {cartCount > 0 ? `(${cartCount})` : ""}
+                        <NavLink to="/explore" className="vantage-nav-link-item position-relative">
+                            BAG
+                            {cartCount > 0 && (
+                                <span className="vantage-nav-bag-badge">{cartCount}</span>
+                            )}
                         </NavLink>
                         <button
                             type="button"
@@ -120,18 +124,8 @@ const Menubar = () => {
                         />
                     </Link>
 
-                    {/* Right: Inline Search + Wishlist + Desktop Profile Pill */}
+                    {/* Right: Wishlist + Desktop Profile Pill (One search bar only in Hero) */}
                     <div className="vantage-desktop-actions">
-                        <form className="vantage-desktop-search" onSubmit={handleNavSearchSubmit}>
-                            <i className="bi bi-search"></i>
-                            <input
-                                type="text"
-                                placeholder="Search for vintage gear..."
-                                value={navSearch}
-                                onChange={(e) => setNavSearch(e.target.value)}
-                            />
-                        </form>
-
                         <Link
                             to={isLoggedIn ? "/profile" : "/login"}
                             className="vantage-icon-btn position-relative"

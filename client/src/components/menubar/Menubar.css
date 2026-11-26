@@ -61,6 +61,22 @@
     color: #f6f2e9;
 }
 
+.vantage-nav-bag-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 5px;
+    margin-left: 5px;
+    border-radius: 999px;
+    background: #c8923a;
+    color: #162415;
+    font-size: 0.65rem;
+    font-weight: 900;
+    vertical-align: middle;
+}
+
 .vantage-desktop-center-logo {
     display: flex;
     align-items: center;

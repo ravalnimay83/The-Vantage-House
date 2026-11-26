@@ -41,7 +41,7 @@ public class SecurityConfig {
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
                         .requestMatchers("/error", "/error/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/login/**", "/auth/**", "/register/**", "/encode").permitAll()
+                        .requestMatchers("/login/**", "/auth/**", "/register/**", "/encode", "/ai/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/categories/**", "/categories", "/items/**", "/items").permitAll()
                         .requestMatchers("/orders/**", "/orders").permitAll()
                         .requestMatchers("/admin/**", "/categories/admin/**").hasRole("ADMIN")
