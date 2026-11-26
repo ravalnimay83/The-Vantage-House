@@ -64,13 +64,24 @@ const UsersList = ({ users, setUsers, onAddClick }) => {
                         const isAdminUser = user.role === "ROLE_ADMIN";
                         return (
                             <div key={user.userId || index} className="admin-user-row">
-                                <div className="d-flex align-items-center gap-3 min-width-0">
+                                <div className="d-flex align-items-center gap-3 min-width-0 flex-grow-1">
                                     <div className={`admin-user-avatar ${isAdminUser ? "is-admin" : ""}`}>
-                                        {(user?.name || "U").charAt(0).toUpperCase()}
+                                        {user.avatarUrl ? (
+                                            <img
+                                                src={user.avatarUrl}
+                                                alt={user.name || "User"}
+                                                referrerPolicy="no-referrer"
+                                                style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }}
+                                            />
+                                        ) : (
+                                            (user?.name || "U").charAt(0).toUpperCase()
+                                        )}
                                     </div>
-                                    <div className="min-width-0">
+                                    <div className="min-width-0 flex-grow-1">
                                         <div className="d-flex align-items-center gap-2 flex-wrap">
-                                            <span className="fw-bold text-dark">{user.name}</span>
+                                            <span className="fw-bold text-dark text-truncate" style={{ maxWidth: "100%" }}>
+                                                {user.name}
+                                            </span>
                                             {isAdminUser && (
                                                 <span className="badge rounded-pill text-bg-warning fw-bold" style={{ fontSize: "10px" }}>
                                                     <i className="bi bi-shield-fill-check me-1"></i>

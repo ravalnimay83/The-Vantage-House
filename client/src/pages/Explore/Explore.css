@@ -698,7 +698,18 @@
     display: none;
 }
 
+.explore-mobile-empty-bag {
+    display: none;
+}
+
 @media (max-width: 960px) {
+    .explore-mobile-empty-bag {
+        display: block;
+        background: #ffffff;
+        border: 1.5px dashed #c8923a;
+        border-radius: 16px;
+        padding: 12px 14px;
+    }
     .explore-shell {
         grid-template-columns: 1fr;
         padding: 14px 14px 120px;

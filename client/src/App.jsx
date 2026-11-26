@@ -11,6 +11,7 @@ import AdminRoute from "./components/Auth/AdminRoute.jsx";
 import CreateSpareKey from "./pages/Login/CreateSpareKey.jsx";
 import CreateAccount from "./pages/Login/CreateAccount.jsx";
 import SplashScreen from "./components/Splash/SplashScreen.jsx";
+import InstallAppPrompt from "./components/InstallPrompt/InstallAppPrompt.jsx";
 import { Toaster } from "react-hot-toast";
 import Login from "./pages/Login/Login.jsx";
 import { useContext } from "react";
@@ -35,6 +36,7 @@ const App = () => {
     return (
         <div>
             <SplashScreen />
+            <InstallAppPrompt auth={auth} />
             {!hideNavbar && <Menubar />}
             <Toaster position="top-right" />
             <Routes>

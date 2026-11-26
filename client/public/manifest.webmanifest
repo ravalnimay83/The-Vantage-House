@@ -1,0 +1,17 @@
+{
+  "name": "The Vantage House",
+  "short_name": "Vantage",
+  "description": "Quality Apparel — Authentic & Original",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#1a3d29",
+  "theme_color": "#1a3d29",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

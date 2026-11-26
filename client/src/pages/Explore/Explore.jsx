@@ -517,6 +517,21 @@ const Explore = () => {
             )}
             {/* LEFT PANEL: ITEMS */}
             <section className="explore-left-panel">
+                {/* Mobile Empty Bag Banner before items */}
+                {cart.length === 0 && checkoutStep === "cart" && (
+                    <div className="explore-mobile-empty-bag">
+                        <div className="d-flex align-items-center gap-2">
+                            <span className="fs-4">🛍️</span>
+                            <div>
+                                <div className="fw-bold small text-dark">Your bag is empty 👀</div>
+                                <div className="text-muted" style={{ fontSize: 12 }}>
+                                    Pick a size and tap <strong>Add</strong> on any item below.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <div className="explore-toolbar">
                     <div className="explore-search-box">
                         <i className="bi bi-search"></i>

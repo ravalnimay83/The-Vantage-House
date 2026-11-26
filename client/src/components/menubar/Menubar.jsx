@@ -1,175 +1,163 @@
 import './Menubar.css';
 import { assets } from "../../assets/assets.js";
-import { Link, NavLink, useLocation } from "react-router-dom";
-import { useContext } from "react";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useContext, useEffect, useRef, useState } from "react";
 import { AppContext } from "../../context/AppContextDefinition.js";
 import toast from "react-hot-toast";
 
 const Menubar = () => {
-    const { auth, cartCount } = useContext(AppContext);
+    const { auth, cartCount, wishlist } = useContext(AppContext);
     const location = useLocation();
+    const navigate = useNavigate();
     const isLoggedIn = Boolean(auth?.token);
     const isAdmin = auth?.role === "ROLE_ADMIN";
+    const wishlistCount = Array.isArray(wishlist) ? wishlist.length : 0;
+
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [searchOpen, setSearchOpen] = useState(false);
+    const [navSearch, setNavSearch] = useState("");
+    const [isScrolled, setIsScrolled] = useState(false);
+    const [dockMinimized, setDockMinimized] = useState(false);
+    const lastScrollY = useRef(0);
+
+    useEffect(() => {
+        setMenuOpen(false);
+        setSearchOpen(false);
+    }, [location.pathname]);
+
+    useEffect(() => {
+        const onScroll = () => {
+            const currentY = window.scrollY || 0;
+            setIsScrolled(currentY > 12);
+
+            if (currentY > 70 && currentY > lastScrollY.current + 6) {
+                setDockMinimized(true);
+            } else if (currentY < lastScrollY.current - 6 || currentY <= 40) {
+                setDockMinimized(false);
+            }
+            lastScrollY.current = currentY;
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => window.removeEventListener("scroll", onScroll);
+    }, []);
 
     const handleAiClick = () => {
-        toast("AI Assistant is coming soon!", { icon: "✨" });
+        toast("Vantage AI Assistant is coming soon!", { icon: "✨" });
     };
 
-    const isAdminRouteActive =
-        location.pathname === "/items" ||
-        location.pathname === "/category" ||
-        location.pathname === "/users";
+    const handleNavSearchSubmit = (e) => {
+        e.preventDefault();
+        const q = navSearch.trim();
+        setSearchOpen(false);
+        navigate(q ? `/products?search=${encodeURIComponent(q)}` : "/products");
+    };
 
     return (
         <>
-            <nav className="navbar navbar-expand-lg bizbill-navbar">
-                <div className="container-fluid px-1">
-                    <Link className="bizbill-brand me-lg-4" to="/dashboard">
-                        <img
-                            src={assets.monogram}
-                            alt="The Vantage House"
-                            className="vantage-nav-monogram"
-                        />
-                        <div className="vantage-nav-wordmark">
-                            <span className="vantage-nav-name">THE VANTAGE HOUSE</span>
-                            <span className="vantage-nav-sub">QUALITY APPAREL</span>
-                        </div>
-                    </Link>
-
-                    {/* Quick Auth / Menu Toggle on Mobile */}
-                    <div className="d-flex align-items-center gap-2 d-lg-none">
-                        {!isLoggedIn ? (
-                            <Link to="/login" className="bizbill-signup-btn py-1 px-3" style={{ fontSize: "12px" }}>
-                                Sign In
-                            </Link>
-                        ) : (
-                            <Link
-                                to="/profile"
-                                className={`bizbill-user-pill text-decoration-none py-1 px-2 ${isAdmin ? "admin-nav-ring" : ""}`}
-                            >
-                                <i className={`bi ${isAdmin ? "bi-shield-fill-check text-warning" : "bi-person-check-fill"}`}></i>
-                                <span className="text-truncate" style={{ maxWidth: "85px" }}>
-                                    {auth.name || "Profile"}
-                                </span>
-                                {isAdmin && <span className="nav-admin-tag">ADMIN</span>}
-                            </Link>
-                        )}
+            {/* Sticky Heritage Top Bar */}
+            <header className={`vantage-topbar ${isScrolled ? "scrolled" : ""}`}>
+                <div className="vantage-topbar-inner">
+                    {/* Left: 3-Line Menu Trigger */}
+                    <div className="vantage-topbar-left">
                         <button
-                            className="navbar-toggler border-0"
                             type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#navbarNav"
-                            aria-controls="navbarNav"
-                            aria-expanded="false"
-                            aria-label="Toggle navigation"
+                            className="vantage-icon-btn"
+                            onClick={() => setMenuOpen((v) => !v)}
+                            aria-label="Open navigation menu"
                         >
-                            <span className="navbar-toggler-icon"></span>
+                            <i className={`bi ${menuOpen ? "bi-x-lg" : "bi-list"}`}></i>
                         </button>
                     </div>
 
-                    <div className="collapse navbar-collapse" id="navbarNav">
-                        <ul className="navbar-nav me-auto mb-2 mb-lg-0 gap-1 align-items-lg-center mt-2 mt-lg-0">
-                            <li className="nav-item">
-                                <NavLink className={({ isActive }) => `nav-link bizbill-nav-link ${isActive ? "active" : ""}`} to="/dashboard">
-                                    Home
-                                </NavLink>
-                            </li>
-                            <li className="nav-item">
-                                <NavLink className={({ isActive }) => `nav-link bizbill-nav-link ${isActive ? "active" : ""}`} to="/products">
-                                    Catalog
-                                </NavLink>
-                            </li>
-                            <li className="nav-item">
-                                <NavLink className={({ isActive }) => `nav-link bizbill-nav-link ${isActive ? "active" : ""}`} to="/explore">
-                                    Billing &amp; Cart
-                                </NavLink>
-                            </li>
-                            {isLoggedIn && (
-                                <li className="nav-item">
-                                    <NavLink className={({ isActive }) => `nav-link bizbill-nav-link ${isActive ? "active" : ""}`} to="/profile">
-                                        Profile
-                                    </NavLink>
-                                </li>
-                            )}
-                            {isAdmin && (
-                                <li className="nav-item dropdown">
-                                    <button
-                                        type="button"
-                                        className={`nav-link dropdown-toggle bizbill-admin-dropdown-btn ${isAdminRouteActive ? "active" : ""}`}
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false"
-                                    >
-                                        <i className="bi bi-shield-lock-fill me-1"></i>
-                                        Admin Panel
-                                    </button>
-                                    <ul className="dropdown-menu bizbill-admin-menu shadow border-0 rounded-4 p-2">
-                                        <li className="px-3 py-1">
-                                            <small className="text-uppercase fw-bold text-muted" style={{ fontSize: "10px", letterSpacing: "0.6px" }}>
-                                                Admin Access Only
-                                            </small>
-                                        </li>
-                                        <li>
-                                            <Link className="dropdown-item rounded-3 py-2 fw-semibold" to="/items">
-                                                <i className="bi bi-box-seam me-2 text-success"></i>
-                                                Inventory Management
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link className="dropdown-item rounded-3 py-2 fw-semibold" to="/category">
-                                                <i className="bi bi-tags me-2 text-primary"></i>
-                                                Category Management
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link className="dropdown-item rounded-3 py-2 fw-semibold" to="/users">
-                                                <i className="bi bi-people me-2 text-warning"></i>
-                                                User Management
-                                            </Link>
-                                        </li>
-                                    </ul>
-                                </li>
-                            )}
-                        </ul>
+                    {/* Center: Heritage Wordmark */}
+                    <Link className="vantage-center-brand" to="/dashboard">
+                        <span className="vantage-brand-main">THE VANTAGE HOUSE</span>
+                        <span className="vantage-brand-script">House</span>
+                    </Link>
 
-                        <div className="bizbill-nav-actions mt-2 mt-lg-0 d-none d-lg-flex">
-                            <button type="button" className="bizbill-ai-btn" onClick={handleAiClick} title="AI Assistant (Coming Soon)">
-                                <i className="bi bi-stars"></i>
-                                <span>AI</span>
-                            </button>
+                    {/* Right: Search & Wishlist (No Bag on top) */}
+                    <div className="vantage-topbar-right">
+                        <button
+                            type="button"
+                            className="vantage-icon-btn"
+                            onClick={() => setSearchOpen((v) => !v)}
+                            aria-label="Search gear"
+                            title="Search"
+                        >
+                            <i className="bi bi-search"></i>
+                        </button>
 
-                            <Link to="/explore" className="bizbill-cart-pill" title="View Cart & Checkout">
-                                <i className="bi bi-bag-fill"></i>
-                                <span>Cart</span>
-                                <span className="bizbill-cart-count">{cartCount}</span>
-                            </Link>
-
-                            {isLoggedIn ? (
-                                <Link
-                                    to="/profile"
-                                    className={`bizbill-user-pill text-decoration-none ${isAdmin ? "admin-nav-ring" : ""}`}
-                                    title="View Profile"
-                                >
-                                    <i className={`bi ${isAdmin ? "bi-shield-fill-check text-warning" : "bi-person-check-fill"}`}></i>
-                                    <span>{auth.name || auth.email || auth.phoneNumber || "Profile"}</span>
-                                    {isAdmin && <span className="nav-admin-tag">ADMIN</span>}
-                                </Link>
-                            ) : (
-                                <>
-                                    <Link to="/login" className="bizbill-signin-btn">
-                                        Sign In
-                                    </Link>
-                                    <Link to="/signup" className="bizbill-signup-btn">
-                                        Sign Up
-                                    </Link>
-                                </>
+                        <Link
+                            to={isLoggedIn ? "/profile" : "/login"}
+                            className="vantage-icon-btn position-relative"
+                            aria-label="Wishlist"
+                            title="Wishlist"
+                        >
+                            <i className={`bi ${wishlistCount > 0 ? "bi-heart-fill" : "bi-heart"}`}></i>
+                            {wishlistCount > 0 && (
+                                <span className="vantage-wishlist-dot">{wishlistCount}</span>
                             )}
-                        </div>
+                        </Link>
                     </div>
                 </div>
-            </nav>
 
-            {/* Mobile Bottom Navigation: Heritage Vantage Pill */}
-            <div className="mobile-bottom-nav">
+                {/* Expandable Top Search Bar */}
+                {searchOpen && (
+                    <form className="vantage-topbar-search-drawer" onSubmit={handleNavSearchSubmit}>
+                        <i className="bi bi-search"></i>
+                        <input
+                            type="text"
+                            placeholder="Search vintage tees, jackets, trousers..."
+                            value={navSearch}
+                            onChange={(e) => setNavSearch(e.target.value)}
+                            autoFocus
+                        />
+                        <button type="submit">Go</button>
+                    </form>
+                )}
+
+                {/* Slide-Down Navigation Drawer (3-line menu) */}
+                {menuOpen && (
+                    <div className="vantage-drawer-menu">
+                        <div className="vantage-drawer-links">
+                            <NavLink to="/dashboard" className="vantage-drawer-link">
+                                <i className="bi bi-house-door"></i> Home
+                            </NavLink>
+                            <NavLink to="/products" className="vantage-drawer-link">
+                                <i className="bi bi-handbag"></i> Shop Drops
+                            </NavLink>
+                            <NavLink to="/explore" className="vantage-drawer-link">
+                                <i className="bi bi-basket2"></i> Bag &amp; Billing ({cartCount})
+                            </NavLink>
+                            <NavLink to={isLoggedIn ? "/profile" : "/login"} className="vantage-drawer-link">
+                                <i className="bi bi-person"></i> {isLoggedIn ? "My Account & Orders" : "Sign In / Join"}
+                            </NavLink>
+                        </div>
+
+                        {isAdmin && (
+                            <div className="vantage-drawer-admin">
+                                <div className="vantage-drawer-admin-title">
+                                    <i className="bi bi-shield-fill-check me-1"></i> Admin Access
+                                </div>
+                                <div className="vantage-drawer-links">
+                                    <NavLink to="/items" className="vantage-drawer-link">
+                                        Manage Items
+                                    </NavLink>
+                                    <NavLink to="/category" className="vantage-drawer-link">
+                                        Manage Categories
+                                    </NavLink>
+                                    <NavLink to="/users" className="vantage-drawer-link">
+                                        Manage Users
+                                    </NavLink>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </header>
+
+            {/* Mobile Bottom Navigation: Cream Pill (No golden outer border) + Scroll-Dock Effect */}
+            <div className={`mobile-bottom-nav ${dockMinimized ? "dock-minimized" : ""}`}>
                 <Link
                     to="/dashboard"
                     className={`mobile-nav-item ${location.pathname === "/dashboard" ? "active" : ""}`}
