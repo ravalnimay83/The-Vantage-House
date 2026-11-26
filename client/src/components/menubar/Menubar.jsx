@@ -61,41 +61,35 @@ const Menubar = () => {
         <>
             {/* Sticky Heritage Top Bar */}
             <header className={`vantage-topbar ${isScrolled ? "scrolled" : ""}`}>
-                {/* DESKTOP NAVBAR (>= 992px): Full Nav Links + Brand + Actions */}
+                {/* DESKTOP NAVBAR (>= 992px): Links Left | Center Text Logo | Search + Heart + Profile Right */}
                 <div className="vantage-desktop-nav">
-                    <Link className="vantage-desktop-brand" to="/dashboard">
-                        <img
-                            src={assets.monogram}
-                            alt="The Vantage House"
-                            className="vantage-nav-monogram"
-                        />
-                        <div className="vantage-nav-wordmark">
-                            <span className="vantage-nav-name">THE VANTAGE HOUSE</span>
-                            <span className="vantage-nav-sub">QUALITY APPAREL</span>
-                        </div>
-                    </Link>
-
                     <nav className="vantage-desktop-links">
-                        <NavLink to="/dashboard" className="vantage-nav-pill">
-                            Home
+                        <NavLink to="/dashboard" className="vantage-nav-link-item">
+                            HOME
                         </NavLink>
-                        <NavLink to="/products" className="vantage-nav-pill">
-                            Shop
+                        <NavLink to="/products" className="vantage-nav-link-item">
+                            SHOP
                         </NavLink>
-                        <NavLink to="/explore" className="vantage-nav-pill">
-                            Billing &amp; Bag {cartCount > 0 ? `(${cartCount})` : ""}
+                        <NavLink to="/explore" className="vantage-nav-link-item">
+                            BAG {cartCount > 0 ? `(${cartCount})` : ""}
                         </NavLink>
+                        <button
+                            type="button"
+                            className="vantage-nav-link-item"
+                            onClick={handleAiClick}
+                        >
+                            VANTAGE AI
+                        </button>
 
                         {isAdmin && (
                             <div className="dropdown">
                                 <button
                                     type="button"
-                                    className={`vantage-nav-pill dropdown-toggle ${isAdminRouteActive ? "active" : ""}`}
+                                    className={`vantage-nav-link-item dropdown-toggle ${isAdminRouteActive ? "active" : ""}`}
                                     data-bs-toggle="dropdown"
                                     aria-expanded="false"
                                 >
-                                    <i className="bi bi-shield-fill-check me-1"></i>
-                                    Admin Access
+                                    ADMIN ACCESS
                                 </button>
                                 <ul className="dropdown-menu shadow-sm border-0 rounded-4 mt-2">
                                     <li>
@@ -118,16 +112,25 @@ const Menubar = () => {
                         )}
                     </nav>
 
+                    {/* Center Brand Text Logo */}
+                    <Link className="vantage-desktop-center-logo" to="/dashboard">
+                        <img
+                            src={assets.homeTopTextLogo}
+                            alt="The Vantage House"
+                        />
+                    </Link>
+
+                    {/* Right: Inline Search + Wishlist + Desktop Profile Pill */}
                     <div className="vantage-desktop-actions">
-                        <button
-                            type="button"
-                            className="vantage-icon-btn"
-                            onClick={() => setSearchOpen((v) => !v)}
-                            aria-label="Search gear"
-                            title="Search"
-                        >
+                        <form className="vantage-desktop-search" onSubmit={handleNavSearchSubmit}>
                             <i className="bi bi-search"></i>
-                        </button>
+                            <input
+                                type="text"
+                                placeholder="Search for vintage gear..."
+                                value={navSearch}
+                                onChange={(e) => setNavSearch(e.target.value)}
+                            />
+                        </form>
 
                         <Link
                             to={isLoggedIn ? "/profile" : "/login"}
@@ -141,21 +144,14 @@ const Menubar = () => {
                             )}
                         </Link>
 
-                        <button
-                            type="button"
-                            className="vantage-ai-pill"
-                            onClick={handleAiClick}
-                            title="Vantage AI"
-                        >
-                            <i className="bi bi-stars"></i>
-                            <span>Vantage AI</span>
-                        </button>
-
                         {isLoggedIn ? (
                             <Link
                                 to="/profile"
                                 className={`vantage-account-pill ${isAdmin ? "is-admin" : ""}`}
                             >
+                                <span className="text-truncate" style={{ maxWidth: 115 }}>
+                                    {auth.name || "Account"}
+                                </span>
                                 {auth.avatarUrl ? (
                                     <img
                                         src={auth.avatarUrl}
@@ -165,9 +161,6 @@ const Menubar = () => {
                                 ) : (
                                     <i className={`bi ${isAdmin ? "bi-shield-fill-check" : "bi-person-circle"}`}></i>
                                 )}
-                                <span className="text-truncate" style={{ maxWidth: 110 }}>
-                                    {auth.name || "Account"}
-                                </span>
                             </Link>
                         ) : (
                             <div className="d-flex align-items-center gap-2">
@@ -182,7 +175,7 @@ const Menubar = () => {
                     </div>
                 </div>
 
-                {/* MOBILE TOP BAR (< 992px): 3-Line Menu | Centered Wordmark | Search + Heart */}
+                {/* MOBILE TOP BAR (< 992px): 3-Line Menu | Centered Text Logo | Search + Heart (No profile on mobile top) */}
                 <div className="vantage-topbar-inner">
                     <div className="vantage-topbar-left">
                         <button
@@ -196,8 +189,11 @@ const Menubar = () => {
                     </div>
 
                     <Link className="vantage-center-brand" to="/dashboard">
-                        <span className="vantage-brand-main">THE VANTAGE HOUSE</span>
-                        <span className="vantage-brand-script">House</span>
+                        <img
+                            src={assets.homeTopTextLogo}
+                            alt="The Vantage House"
+                            className="vantage-mobile-text-logo"
+                        />
                     </Link>
 
                     <div className="vantage-topbar-right">
@@ -225,7 +221,7 @@ const Menubar = () => {
                     </div>
                 </div>
 
-                {/* Expandable Top Search Bar */}
+                {/* Expandable Mobile Top Search Bar */}
                 {searchOpen && (
                     <form className="vantage-topbar-search-drawer" onSubmit={handleNavSearchSubmit}>
                         <i className="bi bi-search"></i>

@@ -50,33 +50,61 @@ const Dashboard = () => {
     return (
         <div className="store-dashboard">
             <div className="store-container">
-                {/* Heritage Welcome Hero Card */}
+                {/* Heritage Split Welcome Hero Card */}
                 <div className="vantage-hero-card">
-                    <div className="vantage-hero-frame">
-                        <h1 className="vantage-hero-title">
-                            {firstName ? `WELCOME BACK, ${firstName}` : "WELCOME TO THE HOUSE"}
-                        </h1>
-                        <p className="vantage-hero-sub">YOUR NEXT CLUB FIT IS READY.</p>
+                    <div className="vantage-hero-split">
+                        <div className="vantage-hero-frame">
+                            <h1 className="vantage-hero-title">
+                                {firstName ? `WELCOME BACK, ${firstName}` : "WELCOME TO THE HOUSE"}
+                            </h1>
+                            <p className="vantage-hero-sub">★ YOUR NEXT CLUB FIT IS READY ★</p>
 
-                        <form className="vantage-hero-search" onSubmit={handleSearchSubmit}>
-                            <input
-                                type="text"
-                                placeholder="SEARCH FOR VINTAGE GEAR..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                            <button
-                                type="button"
-                                className="vantage-hero-filter-btn"
-                                title="Open Full Catalog & Filters"
-                                onClick={() => navigate("/products")}
+                            <div className="vantage-hero-cta-row">
+                                <Link to="/products" className="vantage-cta-cream">
+                                    SHOP NEW DROP
+                                </Link>
+                                <Link to="/explore" className="vantage-cta-outline">
+                                    OPEN BAG &amp; BILLING
+                                </Link>
+                            </div>
+
+                            <form className="vantage-hero-search" onSubmit={handleSearchSubmit}>
+                                <input
+                                    type="text"
+                                    placeholder="SEARCH FOR VINTAGE GEAR..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                                <button
+                                    type="button"
+                                    className="vantage-hero-filter-btn"
+                                    title="Open Full Catalog & Filters"
+                                    onClick={() => navigate("/products")}
+                                >
+                                    <i className="bi bi-sliders"></i>
+                                </button>
+                            </form>
+                        </div>
+
+                        {featuredItem && (
+                            <div
+                                className="vantage-hero-visual"
+                                onClick={() => setQuickViewItem(featuredItem)}
                             >
-                                <i className="bi bi-sliders"></i>
-                            </button>
-                        </form>
-                    </div>
-                    <div className="vantage-pennant-badge" aria-hidden="true">
-                        <span>ESTD 2024</span>
+                                <img
+                                    src={featuredItem.imageUrl || assets.upload}
+                                    alt={featuredItem.name}
+                                    onError={(e) => {
+                                        e.currentTarget.onerror = null;
+                                        e.currentTarget.src = assets.upload;
+                                    }}
+                                />
+                                <div className="vantage-hero-ribbon">NEW DROP ✦ EXCLUSIVE</div>
+                                <div className="vantage-hero-stamp">
+                                    <img src={assets.monogram} alt="Vantage Stamp" />
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 
