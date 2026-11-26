@@ -274,7 +274,7 @@ const VantageAiDrawer = () => {
                     <div className="pixie-locked-screen">
                         <div className="pixie-locked-badge">
                             <span className="pixie-locked-dot" />
-                            MEMBERS ONLY · ACCESS DENIED
+                            SIGN IN REQUIRED
                         </div>
 
                         <div className="pixie-locked-bubble">

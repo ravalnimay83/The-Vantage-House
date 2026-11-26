@@ -3,7 +3,7 @@ import monogram from './logos/monocon.png';
 import primaryLogo from './logos/primarylogo.png';
 import favicon from './logos/favicon.png';
 import homeTopTextLogo from './logos/homeToptextlogo.png';
-import appLogo from './logos/appLogoF (1).png';
+import appLogo from './logos/appLogo.png';
 import pixieSticker from './logos/Pixie/PixieDashboard.png';
 import pixieIcon from './logos/Pixie/PixieIcon.png';
 import pixieBottomIcon from './logos/Pixie/PixieBottomIcon.png';

@@ -331,6 +331,13 @@ const Dashboard = () => {
                             </form>
                         </div>
                     </div>
+
+                    <div className="vantage-footer-bottom">
+                        <span>© 2024–2026 The Vantage House. All rights reserved.</span>
+                        <span className="vantage-footer-credit">
+                            Designed &amp; Built by <strong>Nmy</strong> · Crafted with Heritage
+                        </span>
+                    </div>
                 </footer>
             </div>
 

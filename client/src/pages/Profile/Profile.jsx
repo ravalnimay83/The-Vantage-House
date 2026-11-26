@@ -40,6 +40,7 @@ const Profile = () => {
     const workspaceRef = useRef(null);
 
     const [activeTab, setActiveTab] = useState("orders"); // 'orders' | 'style' | 'wishlist' | 'details'
+    const [aboutOpen, setAboutOpen] = useState(false);
     const [saving, setSaving] = useState(false);
     const [orders, setOrders] = useState([]);
     const [loadingOrders, setLoadingOrders] = useState(false);
@@ -475,6 +476,59 @@ const Profile = () => {
                         </div>
                     )}
                 </main>
+
+                {/* Collapsible About The Vantage House & Contributor Card */}
+                <section className="profile-about-card">
+                    <button
+                        type="button"
+                        className={`profile-about-toggle ${aboutOpen ? "is-open" : ""}`}
+                        onClick={() => setAboutOpen((v) => !v)}
+                        aria-expanded={aboutOpen}
+                    >
+                        <div className="profile-about-toggle-left">
+                            <img
+                                src={assets.appLogo}
+                                alt="The Vantage House"
+                                className="profile-about-logo"
+                            />
+                            <div>
+                                <div className="profile-about-title">About The Vantage House</div>
+                                <div className="profile-about-sub">
+                                    Retro Old Money · Modern Apparel
+                                </div>
+                            </div>
+                        </div>
+                        <span className="profile-about-pill">
+                            {aboutOpen ? "Hide" : "Our Story"} <span className="profile-about-caret">▾</span>
+                        </span>
+                    </button>
+
+                    <div className={`profile-about-collapse ${aboutOpen ? "is-open" : ""}`}>
+                        <div className="profile-about-collapse-inner">
+                            <div className="profile-about-body">
+                                <div className="profile-about-kicker">
+                                    EST. 2024 · RETRO OLD MONEY
+                                </div>
+                                <h4 className="profile-about-heading">
+                                    Classic ease for the new generation.
+                                </h4>
+                                <p className="profile-about-story">
+                                    The Vantage House brings timeless retro old-money style to the latest generation through ready-to-wear pieces that feel effortless and current. Drawing inspiration from classic American prep and timeless regional aesthetics around the world, we curate clean, confident essentials made for everyday wear.
+                                </p>
+
+                                <div className="profile-about-credits">
+                                    <div>
+                                        <span className="profile-about-credit-label">Contributor</span>
+                                        <div className="profile-about-credit-name">Nimay Raval J.</div>
+                                    </div>
+                                    <div className="profile-about-credit-meta">
+                                        Designed &amp; Built by Nmy · © 2024–2026 The Vantage House
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
         </div>
     );

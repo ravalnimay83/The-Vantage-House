@@ -521,6 +521,31 @@
     cursor: pointer;
 }
 
+.vantage-footer-bottom {
+    margin-top: 26px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(26, 61, 41, 0.12);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 18px;
+    font-size: 0.77rem;
+    color: #5b6d62;
+    letter-spacing: 0.25px;
+}
+
+.vantage-footer-credit {
+    font-weight: 500;
+}
+
+.vantage-footer-credit strong {
+    font-family: "Lora", Georgia, serif;
+    font-weight: 700;
+    color: #1a3d29;
+    letter-spacing: 0.4px;
+}
+
 /* RESPONSIVE */
 @media (max-width: 900px) {
     .vantage-hero-split {
