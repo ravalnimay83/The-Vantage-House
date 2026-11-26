@@ -12,6 +12,7 @@ import CreateSpareKey from "./pages/Login/CreateSpareKey.jsx";
 import CreateAccount from "./pages/Login/CreateAccount.jsx";
 import SplashScreen from "./components/Splash/SplashScreen.jsx";
 import InstallAppPrompt from "./components/InstallPrompt/InstallAppPrompt.jsx";
+import RememberMePrompt from "./components/Auth/RememberMePrompt.jsx";
 import VantageAiDrawer from "./components/VantageAi/VantageAiDrawer.jsx";
 import { Toaster } from "react-hot-toast";
 import Login from "./pages/Login/Login.jsx";
@@ -37,6 +38,7 @@ const App = () => {
     return (
         <div>
             <SplashScreen />
+            <RememberMePrompt />
             <InstallAppPrompt auth={auth} />
             <VantageAiDrawer />
             {!hideNavbar && <Menubar />}

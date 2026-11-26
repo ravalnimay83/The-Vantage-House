@@ -26,6 +26,7 @@ const Products = () => {
     const [wishlistOnly, setWishlistOnly] = useState(false);
     const [sortBy, setSortBy] = useState("featured");
     const [quickViewItem, setQuickViewItem] = useState(null);
+    const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
     // Sync state when URL query params change (e.g. clicking category or searching from Dashboard)
     useEffect(() => {
@@ -131,24 +132,50 @@ const Products = () => {
     return (
         <div className="products-page">
             <div className="products-shell">
-                {/* Breadcrumb */}
-                <div className="products-breadcrumb">
-                    <Link to="/dashboard">Home</Link>
-                    <i className="bi bi-chevron-right" style={{ fontSize: "10px" }}></i>
-                    <span>{activeCategoryObj ? (activeCategoryObj.name || activeCategoryObj.categoryName) : "All Products"}</span>
+                {/* Breadcrumb + Mobile Filter Toggle */}
+                <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                    <div className="products-breadcrumb mb-0">
+                        <Link to="/dashboard">Home</Link>
+                        <i className="bi bi-chevron-right" style={{ fontSize: "10px" }}></i>
+                        <span>{activeCategoryObj ? (activeCategoryObj.name || activeCategoryObj.categoryName) : "All Products"}</span>
+                    </div>
+                    <button
+                        type="button"
+                        className="products-mobile-filter-toggle"
+                        onClick={() => setMobileFiltersOpen((v) => !v)}
+                    >
+                        <i className="bi bi-sliders"></i>
+                        <span>{mobileFiltersOpen ? "Hide Filters" : "Filters"}</span>
+                    </button>
                 </div>
 
                 <div className="products-layout">
-                    {/* Left Filters Sidebar */}
-                    <aside className="filters-sidebar">
+                    {mobileFiltersOpen && (
+                        <div
+                            className="products-filter-backdrop"
+                            onClick={() => setMobileFiltersOpen(false)}
+                        />
+                    )}
+                    {/* Left Filters Sidebar (Slide-in drawer on mobile) */}
+                    <aside className={`filters-sidebar ${mobileFiltersOpen ? "mobile-open" : ""}`}>
                         <div className="filters-header">
                             <h5>
                                 <i className="bi bi-funnel-fill"></i>
                                 Filters
                             </h5>
-                            <button type="button" className="filters-clear-btn" onClick={clearAllFilters}>
-                                Clear All
-                            </button>
+                            <div className="d-flex align-items-center gap-3">
+                                <button type="button" className="filters-clear-btn" onClick={clearAllFilters}>
+                                    Clear All
+                                </button>
+                                <button
+                                    type="button"
+                                    className="filters-mobile-close-btn"
+                                    onClick={() => setMobileFiltersOpen(false)}
+                                    aria-label="Close filters"
+                                >
+                                    ✕
+                                </button>
+                            </div>
                         </div>
 
                         {/* Category Filter */}
@@ -236,19 +263,9 @@ const Products = () => {
 
                     {/* Right Main Product Area */}
                     <main className="products-main">
-                        {/* Search + Sort Toolbar */}
+                        {/* Sort Toolbar */}
                         <div className="products-toolbar">
-                            <div className="products-search-box">
-                                <i className="bi bi-search"></i>
-                                <input
-                                    type="text"
-                                    placeholder="Search within products..."
-                                    value={searchQuery}
-                                    onChange={(e) => handleSearchChange(e.target.value)}
-                                />
-                            </div>
-
-                            <div className="products-sort-group">
+                            <div className="products-sort-group w-100 justify-content-between">
                                 <span className="products-result-count">
                                     Showing {filteredAndSortedItems.length} of {safeItems.length}
                                 </span>

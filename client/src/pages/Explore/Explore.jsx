@@ -517,18 +517,21 @@ const Explore = () => {
             )}
             {/* LEFT PANEL: ITEMS */}
             <section className="explore-left-panel">
-                {/* Mobile Empty Bag Banner before items */}
+                {/* Mobile Empty Bag Card before items */}
                 {cart.length === 0 && checkoutStep === "cart" && (
                     <div className="explore-mobile-empty-bag">
-                        <div className="d-flex align-items-center gap-2">
-                            <span className="fs-4">🛍️</span>
-                            <div>
-                                <div className="fw-bold small text-dark">Your bag is empty 👀</div>
-                                <div className="text-muted" style={{ fontSize: 12 }}>
-                                    Pick a size and tap <strong>Add</strong> on any item below.
-                                </div>
-                            </div>
-                        </div>
+                        <div className="mobile-empty-bag-icon">🛍️</div>
+                        <h6 className="fw-bold text-dark mb-1">Your bag is empty</h6>
+                        <p className="text-muted small mb-3">
+                            Nothing in your Vantage bag yet. Pick your size on any drop below to build your fit.
+                        </p>
+                        <button
+                            type="button"
+                            className="btn btn-dark btn-sm rounded-pill px-4 fw-bold"
+                            onClick={() => searchInputRef.current?.focus()}
+                        >
+                            Browse drops below ↓
+                        </button>
                     </div>
                 )}
 

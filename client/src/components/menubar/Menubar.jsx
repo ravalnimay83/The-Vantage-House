@@ -3,8 +3,16 @@ import { assets } from "../../assets/assets.js";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useRef, useState } from "react";
 import { AppContext } from "../../context/AppContextDefinition.js";
-import { openVantageAi } from "../VantageAi/VantageAiDrawer.jsx";
+import { closeVantageAi, openVantageAi } from "../VantageAi/VantageAiDrawer.jsx";
 import toast from "react-hot-toast";
+
+const SEARCH_PLACEHOLDERS = [
+    "Search the House…",
+    "Search oxford shirts…",
+    "Try 'cargo pants'…",
+    "Looking for a campus fit?",
+    "Search by style, fabric or colour…",
+];
 
 const Menubar = () => {
     const { auth, cartCount, wishlist } = useContext(AppContext);
@@ -17,9 +25,31 @@ const Menubar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
     const [navSearch, setNavSearch] = useState("");
+    const [placeholderIdx, setPlaceholderIdx] = useState(0);
+    const [placeholderFading, setPlaceholderFading] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [dockMinimized, setDockMinimized] = useState(false);
+    const [pixieBouncing, setPixieBouncing] = useState(false);
+    const [pixieOpen, setPixieOpen] = useState(false);
+    const [pixieTyping, setPixieTyping] = useState(false);
     const lastScrollY = useRef(0);
+
+    useEffect(() => {
+        const onPixieLanded = () => {
+            setPixieBouncing(true);
+            setTimeout(() => setPixieBouncing(false), 650);
+        };
+        const onAiState = (e) => {
+            setPixieOpen(Boolean(e.detail?.open));
+            setPixieTyping(Boolean(e.detail?.typing));
+        };
+        window.addEventListener("pixie:landed", onPixieLanded);
+        window.addEventListener("vantage:ai-state", onAiState);
+        return () => {
+            window.removeEventListener("pixie:landed", onPixieLanded);
+            window.removeEventListener("vantage:ai-state", onAiState);
+        };
+    }, []);
 
     const isAdminRouteActive =
         location.pathname === "/items" ||
@@ -46,6 +76,18 @@ const Menubar = () => {
         window.addEventListener("scroll", onScroll, { passive: true });
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
+
+    useEffect(() => {
+        if (!searchOpen || navSearch) return;
+        const interval = setInterval(() => {
+            setPlaceholderFading(true);
+            setTimeout(() => {
+                setPlaceholderIdx((prev) => (prev + 1) % SEARCH_PLACEHOLDERS.length);
+                setPlaceholderFading(false);
+            }, 240);
+        }, 3000);
+        return () => clearInterval(interval);
+    }, [searchOpen, navSearch]);
 
     const handleAiClick = () => {
         openVantageAi();
@@ -219,14 +261,20 @@ const Menubar = () => {
                 {searchOpen && (
                     <form className="vantage-topbar-search-drawer" onSubmit={handleNavSearchSubmit}>
                         <i className="bi bi-search"></i>
-                        <input
-                            type="text"
-                            placeholder="Search vintage tees, jackets, trousers..."
-                            value={navSearch}
-                            onChange={(e) => setNavSearch(e.target.value)}
-                            autoFocus
-                        />
-                        <button type="submit">Go</button>
+                        <div className="vantage-search-input-wrap">
+                            {!navSearch && (
+                                <span className={`vantage-rotating-placeholder ${placeholderFading ? "fading" : ""}`}>
+                                    {SEARCH_PLACEHOLDERS[placeholderIdx]}
+                                </span>
+                            )}
+                            <input
+                                type="text"
+                                value={navSearch}
+                                onChange={(e) => setNavSearch(e.target.value)}
+                                autoFocus
+                            />
+                        </div>
+                        <button type="submit">Find</button>
                     </form>
                 )}
 
@@ -274,6 +322,7 @@ const Menubar = () => {
             <div className={`mobile-bottom-nav ${dockMinimized ? "dock-minimized" : ""}`}>
                 <Link
                     to="/dashboard"
+                    onClick={closeVantageAi}
                     className={`mobile-nav-item ${location.pathname === "/dashboard" ? "active" : ""}`}
                 >
                     <i className="bi bi-house-door-fill"></i>
@@ -283,6 +332,7 @@ const Menubar = () => {
 
                 <Link
                     to="/products"
+                    onClick={closeVantageAi}
                     className={`mobile-nav-item ${location.pathname === "/products" ? "active" : ""}`}
                 >
                     <i className="bi bi-handbag-fill"></i>
@@ -292,18 +342,28 @@ const Menubar = () => {
 
                 <button
                     type="button"
-                    className="mobile-nav-center-v"
+                    id="pixie-mobile-tab"
+                    className={`mobile-nav-item ${pixieOpen ? "active pixie-active" : ""} ${pixieBouncing ? "pixie-landed-bounce" : ""}`}
                     onClick={handleAiClick}
-                    aria-label="Vantage AI (Coming Soon)"
+                    aria-label="Ask Pixie"
                 >
-                    <span className="mobile-v-crest">
-                        <img src={assets.favicon} alt="Vantage AI" />
+                    <span className={`pixie-bottom-icon-wrap ${pixieOpen ? "is-active" : ""} ${pixieTyping ? "is-typing" : ""}`}>
+                        <img src={assets.pixieIcon} alt="Ask Pixie" className="pixie-bottom-img" />
+                        {pixieTyping && (
+                            <span className="pixie-bottom-typing-dots" aria-hidden="true">
+                                <span />
+                                <span />
+                                <span />
+                            </span>
+                        )}
                     </span>
-                    <span className="mobile-v-label">VANTAGE</span>
+                    <span>ASK PIXIE</span>
+                    {pixieOpen && <span className="mobile-nav-star">★</span>}
                 </button>
 
                 <Link
                     to="/explore"
+                    onClick={closeVantageAi}
                     className={`mobile-nav-item ${location.pathname === "/explore" ? "active" : ""}`}
                 >
                     <i className="bi bi-basket2-fill"></i>
@@ -314,6 +374,7 @@ const Menubar = () => {
 
                 <Link
                     to={isLoggedIn ? "/profile" : "/login"}
+                    onClick={closeVantageAi}
                     className={`mobile-nav-item ${location.pathname === "/profile" || location.pathname === "/login" ? "active" : ""}`}
                 >
                     {isLoggedIn && auth.avatarUrl ? (
@@ -336,6 +397,19 @@ const Menubar = () => {
                     )}
                 </Link>
             </div>
+
+            {/* Desktop Bottom-Right Ask Pixie Launcher */}
+            <button
+                type="button"
+                id="pixie-desktop-fab"
+                className={`pixie-desktop-fab ${pixieBouncing ? "pixie-landed-bounce" : ""}`}
+                onClick={handleAiClick}
+                aria-label="Ask Pixie"
+                title="Ask Pixie"
+            >
+                <img src={assets.pixieIcon} alt="Pixie" />
+                <span>Ask Pixie</span>
+            </button>
         </>
     );
 };

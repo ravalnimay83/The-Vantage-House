@@ -704,11 +704,30 @@
 
 @media (max-width: 960px) {
     .explore-mobile-empty-bag {
-        display: block;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
         background: #ffffff;
         border: 1.5px dashed #c8923a;
-        border-radius: 16px;
-        padding: 12px 14px;
+        border-radius: 20px;
+        padding: 28px 20px;
+        min-height: 215px;
+        box-shadow: 0 8px 22px rgba(26, 61, 41, 0.06);
+    }
+
+    .mobile-empty-bag-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background: #f6f6ea;
+        border: 1px solid rgba(200, 146, 58, 0.45);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        margin-bottom: 10px;
     }
     .explore-shell {
         grid-template-columns: 1fr;

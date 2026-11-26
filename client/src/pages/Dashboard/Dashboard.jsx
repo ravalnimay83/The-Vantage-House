@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContextDefinition.js";
 import { assets } from "../../assets/assets.js";
 import ProductQuickView from "../../components/ProductQuickView/ProductQuickView.jsx";
+import PixieIntroPopup from "../../components/Pixie/PixieIntroPopup.jsx";
 import { openVantageAi } from "../../components/VantageAi/VantageAiDrawer.jsx";
 import toast from "react-hot-toast";
 
@@ -138,6 +139,7 @@ const Dashboard = () => {
 
     return (
         <div className="store-dashboard">
+            <PixieIntroPopup />
             <div className="store-container">
                 {/* 1. HERO */}
                 <section className="vantage-hero-card">

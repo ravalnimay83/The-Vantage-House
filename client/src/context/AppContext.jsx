@@ -19,24 +19,26 @@ const EMPTY_AUTH = {
 };
 
 const getStoredAuth = () => {
-    const token = localStorage.getItem("token");
+    const useSession = !localStorage.getItem("token") && Boolean(sessionStorage.getItem("token"));
+    const storage = useSession ? sessionStorage : localStorage;
+    const token = storage.getItem("token");
     if (!token) return EMPTY_AUTH;
     try {
-        const storedUser = localStorage.getItem("bizbill_user");
+        const storedUser = storage.getItem("bizbill_user");
         const parsed = storedUser ? JSON.parse(storedUser) : {};
         return {
             ...EMPTY_AUTH,
             ...parsed,
             token,
-            role: parsed.role || localStorage.getItem("role") || null,
-            email: parsed.email || localStorage.getItem("email") || null,
+            role: parsed.role || storage.getItem("role") || null,
+            email: parsed.email || storage.getItem("email") || null,
         };
     } catch {
         return {
             ...EMPTY_AUTH,
             token,
-            role: localStorage.getItem("role") || null,
-            email: localStorage.getItem("email") || null,
+            role: storage.getItem("role") || null,
+            email: storage.getItem("email") || null,
         };
     }
 };
@@ -172,28 +174,50 @@ export const AppContextProvider = (props) => {
         }
 
         if (nextAuth.token) {
-            localStorage.setItem("token", nextAuth.token);
-            if (nextAuth.role) localStorage.setItem("role", nextAuth.role);
-            if (nextAuth.email) localStorage.setItem("email", nextAuth.email);
-            localStorage.setItem("bizbill_user", JSON.stringify(nextAuth));
+            const pref = localStorage.getItem("vantage_remember_pref");
+            const targetStorage = pref === "session" ? sessionStorage : localStorage;
+            targetStorage.setItem("token", nextAuth.token);
+            if (nextAuth.role) targetStorage.setItem("role", nextAuth.role);
+            if (nextAuth.email) targetStorage.setItem("email", nextAuth.email);
+            targetStorage.setItem("bizbill_user", JSON.stringify(nextAuth));
         }
         setAuth(nextAuth);
+    };
+
+    const setRememberPreference = (remember) => {
+        localStorage.setItem("vantage_remember_pref", remember ? "remember" : "session");
+        if (!auth?.token) return;
+        const target = remember ? localStorage : sessionStorage;
+        const other = remember ? sessionStorage : localStorage;
+
+        other.removeItem("token");
+        other.removeItem("role");
+        other.removeItem("email");
+        other.removeItem("bizbill_user");
+
+        target.setItem("token", auth.token);
+        if (auth.role) target.setItem("role", auth.role);
+        if (auth.email) target.setItem("email", auth.email);
+        target.setItem("bizbill_user", JSON.stringify(auth));
     };
 
     const updateUserProfile = (profileData) => {
         setAuth((prev) => {
             const updated = { ...prev, ...profileData, token: prev.token };
-            if (updated.email) localStorage.setItem("email", updated.email);
-            localStorage.setItem("bizbill_user", JSON.stringify(updated));
+            const target = localStorage.getItem("token") ? localStorage : sessionStorage;
+            if (updated.email) target.setItem("email", updated.email);
+            target.setItem("bizbill_user", JSON.stringify(updated));
             return updated;
         });
     };
 
     const logout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("role");
-        localStorage.removeItem("email");
-        localStorage.removeItem("bizbill_user");
+        [localStorage, sessionStorage].forEach((s) => {
+            s.removeItem("token");
+            s.removeItem("role");
+            s.removeItem("email");
+            s.removeItem("bizbill_user");
+        });
         setAuth(EMPTY_AUTH);
     };
 
@@ -288,6 +312,7 @@ export const AppContextProvider = (props) => {
         reloadCatalog: loadCatalogData,
         auth,
         setAuthData,
+        setRememberPreference,
         updateUserProfile,
         logout,
         cart,
