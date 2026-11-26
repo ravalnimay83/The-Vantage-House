@@ -1,10 +1,22 @@
-# Stage 1: Build Spring Boot JAR with pre-installed Maven 3.9 + JDK 21
+# Stage 1: Build Spring Boot JAR with Maven 3.9 + JDK 21 (using Google Maven Central mirror to avoid 429 rate-limits)
 FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
+
+RUN mkdir -p /root/.m2 && printf '%s\n' \
+  '<settings>' \
+  '  <mirrors>' \
+  '    <mirror>' \
+  '      <id>google-maven-central</id>' \
+  '      <name>GCS Maven Central mirror</name>' \
+  '      <url>https://maven-central.storage-download.googleapis.com/maven2</url>' \
+  '      <mirrorOf>central</mirrorOf>' \
+  '    </mirror>' \
+  '  </mirrors>' \
+  '</settings>' > /root/.m2/settings.xml
+
 COPY pom.xml .
-RUN mvn dependency:go-offline -B
 COPY src ./src
-RUN mvn clean package -DskipTests
+RUN mvn clean package -DskipTests -B
 
 # Stage 2: Lightweight Java 21 Runtime
 FROM eclipse-temurin:21-jre
