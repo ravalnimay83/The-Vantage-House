@@ -16,12 +16,30 @@ import RememberMePrompt from "./components/Auth/RememberMePrompt.jsx";
 import VantageAiDrawer from "./components/VantageAi/VantageAiDrawer.jsx";
 import { Toaster } from "react-hot-toast";
 import Login from "./pages/Login/Login.jsx";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { AppContext } from "./context/AppContextDefinition.js";
+import { assets } from "./assets/assets.js";
 
 const App = () => {
     const location = useLocation();
     const { auth } = useContext(AppContext);
+
+    useEffect(() => {
+        const critical = [
+            assets.monogram,
+            assets.homeTopTextLogo,
+            assets.appLogo,
+            assets.pixieIcon,
+            assets.pixieSticker,
+            assets.pixieSignInRequired,
+        ];
+        critical.forEach((src) => {
+            if (!src) return;
+            const img = new Image();
+            img.src = src;
+            img.decode?.().catch(() => {});
+        });
+    }, []);
 
     const needsSpareKey = Boolean(auth?.token && auth?.passwordSet === false);
 

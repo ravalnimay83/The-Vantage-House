@@ -9,19 +9,62 @@ const LOADING_LINES = [
     "Dressing up the pixels… 🎨",
 ];
 
+export const ServerWarmupNote = ({ active }) => {
+    const [state, setState] = useState("hidden"); // 'hidden' | 'visible' | 'leaving'
+
+    useEffect(() => {
+        if (!active) {
+            setState("hidden");
+            return;
+        }
+        let leaveTimer;
+        let hideTimer;
+        const showTimer = setTimeout(() => {
+            setState("visible");
+            leaveTimer = setTimeout(() => {
+                setState("leaving");
+                hideTimer = setTimeout(() => setState("hidden"), 300);
+            }, 5500);
+        }, 2500);
+
+        return () => {
+            clearTimeout(showTimer);
+            if (leaveTimer) clearTimeout(leaveTimer);
+            if (hideTimer) clearTimeout(hideTimer);
+        };
+    }, [active]);
+
+    if (!active || state === "hidden") return null;
+
+    return (
+        <div className={`vh-warmup-note ${state === "leaving" ? "is-leaving" : ""}`}>
+            <span>
+                Waking up the House — 20–30s is normal on our free server
+                <span className="vh-ellipsis" aria-hidden="true">
+                    <span>.</span>
+                    <span>.</span>
+                    <span>.</span>
+                </span>{" "}
+                ☕✨
+            </span>
+        </div>
+    );
+};
+
 export const RotatingLoadingLine = ({ compact = false }) => {
     const [idx, setIdx] = useState(0);
     const [fading, setFading] = useState(false);
 
     useEffect(() => {
-        const timer = setInterval(() => {
+        const interval = setInterval(() => {
             setFading(true);
             setTimeout(() => {
                 setIdx((prev) => (prev + 1) % LOADING_LINES.length);
                 setFading(false);
             }, 240);
-        }, 2300);
-        return () => clearInterval(timer);
+        }, 2400);
+
+        return () => clearInterval(interval);
     }, []);
 
     return (

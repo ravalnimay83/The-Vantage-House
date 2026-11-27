@@ -200,6 +200,8 @@ const VantageAiDrawer = () => {
                                     src={isLoggedIn ? assets.pixieSticker : assets.pixieSignInRequired}
                                     alt="Pixie"
                                     className="vantage-ai-avatar"
+                                    loading="eager"
+                                    decoding="sync"
                                 />
                                 <span className={`vantage-ai-online-dot ${!isLoggedIn ? "is-locked" : ""}`} />
                             </div>
@@ -319,6 +321,8 @@ const VantageAiDrawer = () => {
                                 <img
                                     src={assets.pixieSignInRequired}
                                     alt="Pixie Access Denied"
+                                    loading="eager"
+                                    decoding="sync"
                                 />
                             </div>
                         </div>

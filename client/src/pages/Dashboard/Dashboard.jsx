@@ -6,7 +6,11 @@ import { assets } from "../../assets/assets.js";
 import ProductQuickView from "../../components/ProductQuickView/ProductQuickView.jsx";
 import PixieIntroPopup from "../../components/Pixie/PixieIntroPopup.jsx";
 import { openVantageAi } from "../../components/VantageAi/VantageAiDrawer.jsx";
-import { WatermarkSkeletonBox, WatermarkSkeletonGrid } from "../../components/ItemLoader/ItemLoadingSkeleton.jsx";
+import {
+    ServerWarmupNote,
+    WatermarkSkeletonBox,
+    WatermarkSkeletonGrid,
+} from "../../components/ItemLoader/ItemLoadingSkeleton.jsx";
 import toast from "react-hot-toast";
 
 const Dashboard = () => {
@@ -221,6 +225,8 @@ const Dashboard = () => {
                         </button>
                     ))}
                 </section>
+
+                <ServerWarmupNote active={safeItems.length === 0} />
 
                 {/* 3. THE VANTAGE SPECIAL (Row of 4) */}
                 <section className="vantage-home-section">
