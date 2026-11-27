@@ -25,6 +25,23 @@ const PixieIntroPopup = () => {
     const introKey = `pixie_intro_seen_${userScope}`;
     const lastDayKey = `pixie_last_day_${userScope}`;
     const rememberAskedKey = `vantage_remember_asked_${userScope}`;
+    const stickerReadyRef = useRef(null);
+
+    // Preload and decode Pixie sticker immediately so first-login popup never shows a blank image
+    useEffect(() => {
+        const img = new Image();
+        img.src = assets.pixieSticker;
+        const readyPromise = img.decode
+            ? img.decode().catch(() => {})
+            : new Promise((resolve) => {
+                  if (img.complete) resolve();
+                  else {
+                      img.onload = resolve;
+                      img.onerror = resolve;
+                  }
+              });
+        stickerReadyRef.current = readyPromise;
+    }, []);
 
     const closeWithFly = useCallback(
         (promptToSend = null) => {
@@ -36,6 +53,7 @@ const PixieIntroPopup = () => {
             setMode("flying");
 
             setTimeout(() => {
+                window.dispatchEvent(new CustomEvent("pixie:intro-state", { detail: { active: false } }));
                 window.dispatchEvent(new CustomEvent("pixie:landed"));
                 setMode("hidden");
                 if (typeof promptToSend === "string") {
@@ -48,23 +66,23 @@ const PixieIntroPopup = () => {
 
     useEffect(() => {
         if (!isReadyUser) return;
+        let cancelled = false;
 
-        const checkAndShow = () => {
+        const checkAndShow = async () => {
             // Wait if RememberMePrompt hasn't been answered yet (avoid stacking popups)
             if (localStorage.getItem(rememberAskedKey) !== "1") return;
 
             const introSeen = localStorage.getItem(introKey) === "1";
-            const today = getTodayKey();
-            const lastDay = localStorage.getItem(lastDayKey);
-
             if (!introSeen) {
+                if (stickerReadyRef.current) {
+                    await Promise.race([
+                        stickerReadyRef.current,
+                        new Promise((r) => setTimeout(r, 1500)),
+                    ]);
+                }
+                if (cancelled) return;
+                window.dispatchEvent(new CustomEvent("pixie:intro-state", { detail: { active: true } }));
                 setMode("full");
-            } else if (lastDay && lastDay !== today) {
-                localStorage.setItem(lastDayKey, today);
-                setMode("bubble");
-                setTimeout(() => setMode("hidden"), 4000);
-            } else if (!lastDay) {
-                localStorage.setItem(lastDayKey, today);
             }
         };
 
@@ -75,10 +93,11 @@ const PixieIntroPopup = () => {
         window.addEventListener("vantage:remember-resolved", onRememberDone);
 
         return () => {
+            cancelled = true;
             clearTimeout(showTimer);
             window.removeEventListener("vantage:remember-resolved", onRememberDone);
         };
-    }, [isReadyUser, introKey, lastDayKey, rememberAskedKey]);
+    }, [isReadyUser, introKey, rememberAskedKey]);
 
     // Auto-close after 8 seconds + Esc key + scroll lock
     useEffect(() => {

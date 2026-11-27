@@ -6,6 +6,7 @@ import { assets } from "../../assets/assets.js";
 import ProductQuickView from "../../components/ProductQuickView/ProductQuickView.jsx";
 import PixieIntroPopup from "../../components/Pixie/PixieIntroPopup.jsx";
 import { openVantageAi } from "../../components/VantageAi/VantageAiDrawer.jsx";
+import { WatermarkSkeletonBox, WatermarkSkeletonGrid } from "../../components/ItemLoader/ItemLoadingSkeleton.jsx";
 import toast from "react-hot-toast";
 
 const Dashboard = () => {
@@ -126,16 +127,9 @@ const Dashboard = () => {
         );
     };
 
-    const renderSkeletonRow = (count) =>
-        Array.from({ length: count }).map((_, idx) => (
-            <div key={idx} className="vantage-uniform-card skeleton-card">
-                <div className="vantage-uniform-media skeleton-shimmer" />
-                <div className="vantage-uniform-body">
-                    <div className="skeleton-line w-75 mb-2" />
-                    <div className="skeleton-line w-50" />
-                </div>
-            </div>
-        ));
+    const renderSkeletonRow = (count, showBanner = true) => (
+        <WatermarkSkeletonGrid count={count} showBanner={showBanner} />
+    );
 
     return (
         <div className="store-dashboard">
@@ -194,7 +188,7 @@ const Dashboard = () => {
                                     />
                                 ))
                             ) : (
-                                <div className="skeleton-shimmer w-100 h-100" />
+                                <WatermarkSkeletonBox className="w-100 h-100" />
                             )}
                         </div>
                     </div>
@@ -239,7 +233,7 @@ const Dashboard = () => {
                     <div className="vantage-row-4">
                         {vantageSpecialItems.length > 0
                             ? vantageSpecialItems.map((item) => renderUniformCard(item, false))
-                            : renderSkeletonRow(4)}
+                            : renderSkeletonRow(4, true)}
                     </div>
                 </section>
 
@@ -254,7 +248,7 @@ const Dashboard = () => {
                     <div className="vantage-horizontal-row">
                         {newArrivalItems.length > 0
                             ? newArrivalItems.map((item) => renderUniformCard(item, true))
-                            : renderSkeletonRow(4)}
+                            : renderSkeletonRow(4, false)}
                     </div>
                 </section>
 

@@ -1,0 +1,124 @@
+.vh-skeleton-wrap {
+    width: 100%;
+    grid-column: 1 / -1;
+}
+
+.vh-skeleton-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.vh-skeleton-card {
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid rgba(26, 61, 41, 0.1);
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(26, 61, 41, 0.04);
+}
+
+.vh-watermark-box {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(120deg, #eceee7 25%, #f5f6f0 50%, #eceee7 75%);
+    background-size: 200% 100%;
+    animation: vhShimmer 1.6s ease-in-out infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.vh-skeleton-media {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+}
+
+.vh-watermark-img {
+    width: 54%;
+    max-width: 120px;
+    height: auto;
+    object-fit: contain;
+    opacity: 0.28;
+    filter: grayscale(15%);
+    animation: vhWatermarkPulse 1.8s ease-in-out infinite;
+    pointer-events: none;
+    user-select: none;
+}
+
+.vh-skeleton-body {
+    padding: 12px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.vh-skeleton-line {
+    height: 11px;
+    border-radius: 999px;
+    background: linear-gradient(120deg, #e7eae2 25%, #f2f4ed 50%, #e7eae2 75%);
+    background-size: 200% 100%;
+    animation: vhShimmer 1.6s ease-in-out infinite;
+}
+
+.vh-skeleton-line.w-75 {
+    width: 76%;
+}
+
+.vh-skeleton-line.w-45 {
+    width: 44%;
+}
+
+.vh-loading-status {
+    margin-top: 0;
+    margin-bottom: 14px;
+    text-align: center;
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.vh-loading-status.is-compact {
+    margin-top: 10px;
+    margin-bottom: 0;
+}
+
+.vh-loading-line {
+    font-family: "Lora", Georgia, "Times New Roman", serif;
+    font-style: italic;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1a3d29;
+    letter-spacing: 0.2px;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.24s ease, transform 0.24s ease;
+}
+
+.vh-loading-line.is-fading {
+    opacity: 0;
+    transform: translateY(-4px);
+}
+
+@keyframes vhShimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+@keyframes vhWatermarkPulse {
+    0%, 100% {
+        transform: scale(0.96);
+        opacity: 0.22;
+    }
+    50% {
+        transform: scale(1.04);
+        opacity: 0.36;
+    }
+}
+
+@media (max-width: 900px) {
+    .vh-skeleton-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+}

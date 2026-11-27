@@ -4,6 +4,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { AppContext } from "../../context/AppContextDefinition.js";
 import { assets } from "../../assets/assets.js";
 import ProductQuickView from "../../components/ProductQuickView/ProductQuickView.jsx";
+import { WatermarkSkeletonGrid } from "../../components/ItemLoader/ItemLoadingSkeleton.jsx";
 import toast from "react-hot-toast";
 
 const PRICE_PRESETS = [
@@ -321,7 +322,9 @@ const Products = () => {
                         )}
 
                         {/* Product Grid */}
-                        {filteredAndSortedItems.length === 0 ? (
+                        {safeItems.length === 0 ? (
+                            <WatermarkSkeletonGrid count={8} showBanner />
+                        ) : filteredAndSortedItems.length === 0 ? (
                             <div className="products-empty-card">
                                 <i className="bi bi-search fs-1 d-block mb-2"></i>
                                 <h5 className="text-dark fw-bold">No matching products found</h5>

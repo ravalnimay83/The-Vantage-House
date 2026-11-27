@@ -14,6 +14,33 @@ const SEARCH_PLACEHOLDERS = [
     "Search by style, fabric or colour…",
 ];
 
+const getPixieGreeting = (firstName) => {
+    const now = new Date();
+    const day = now.getDay();
+    const hour = now.getHours();
+    const isWeekend = day === 0 || day === 6;
+
+    if (isWeekend && hour >= 10 && hour < 18) {
+        return firstName
+            ? `Weekend mode on, ${firstName}. Need an outfit? 🕶️✨`
+            : "Weekend mode on. Need an outfit? 🕶️✨";
+    }
+    if (hour >= 5 && hour < 12) {
+        return firstName ? `Good morning, ${firstName}! ☀️` : "Good morning! ☀️";
+    }
+    if (hour >= 12 && hour < 17) {
+        return firstName
+            ? `Afternoon, ${firstName}! Ready for a fit check? 🧥`
+            : "Afternoon! Ready for a fit check? 🧥";
+    }
+    if (hour >= 17 && hour < 21) {
+        return firstName ? `Evening, ${firstName}. Treat yourself? ✨` : "Evening. Treat yourself? ✨";
+    }
+    return firstName
+        ? `Late night style scroll, ${firstName}? 🌙✨`
+        : "Late night style scroll? 🌙✨";
+};
+
 const Menubar = () => {
     const { auth, cartCount, wishlist } = useContext(AppContext);
     const location = useLocation();
@@ -32,7 +59,13 @@ const Menubar = () => {
     const [pixieBouncing, setPixieBouncing] = useState(false);
     const [pixieOpen, setPixieOpen] = useState(false);
     const [pixieTyping, setPixieTyping] = useState(false);
+    const [greetState, setGreetState] = useState("hidden"); // 'hidden' | 'visible' | 'leaving'
+    const [introActive, setIntroActive] = useState(false);
     const lastScrollY = useRef(0);
+    const greetShownRef = useRef(false);
+
+    const firstName = auth?.name ? auth.name.trim().split(/\s+/)[0] : "";
+    const greetMessage = getPixieGreeting(firstName);
 
     useEffect(() => {
         const onPixieLanded = () => {
@@ -40,16 +73,44 @@ const Menubar = () => {
             setTimeout(() => setPixieBouncing(false), 650);
         };
         const onAiState = (e) => {
-            setPixieOpen(Boolean(e.detail?.open));
+            const isOpen = Boolean(e.detail?.open);
+            setPixieOpen(isOpen);
             setPixieTyping(Boolean(e.detail?.typing));
+            if (isOpen) setGreetState("hidden");
+        };
+        const onIntroState = (e) => {
+            setIntroActive(Boolean(e.detail?.active));
         };
         window.addEventListener("pixie:landed", onPixieLanded);
         window.addEventListener("vantage:ai-state", onAiState);
+        window.addEventListener("pixie:intro-state", onIntroState);
         return () => {
             window.removeEventListener("pixie:landed", onPixieLanded);
             window.removeEventListener("vantage:ai-state", onAiState);
+            window.removeEventListener("pixie:intro-state", onIntroState);
         };
     }, []);
+
+    useEffect(() => {
+        if (greetShownRef.current || introActive || pixieOpen) return;
+        let leaveTimer;
+        let hideTimer;
+        const showTimer = setTimeout(() => {
+            if (introActive || pixieOpen) return;
+            greetShownRef.current = true;
+            setGreetState("visible");
+            leaveTimer = setTimeout(() => {
+                setGreetState("leaving");
+                hideTimer = setTimeout(() => setGreetState("hidden"), 320);
+            }, 7000);
+        }, 750);
+
+        return () => {
+            clearTimeout(showTimer);
+            if (leaveTimer) clearTimeout(leaveTimer);
+            if (hideTimer) clearTimeout(hideTimer);
+        };
+    }, [introActive, pixieOpen]);
 
     const isAdminRouteActive =
         location.pathname === "/items" ||
@@ -410,6 +471,22 @@ const Menubar = () => {
                 <img src={assets.pixieIcon} alt="Pixie" />
                 <span>Ask Pixie</span>
             </button>
+
+            {/* Every-visit Time-Based Bottom Pixie Greeting */}
+            {greetState !== "hidden" && !pixieOpen && (
+                <button
+                    type="button"
+                    className={`pixie-greet-bubble ${greetState === "leaving" ? "is-leaving" : ""}`}
+                    onClick={() => {
+                        setGreetState("leaving");
+                        setTimeout(() => setGreetState("hidden"), 180);
+                        openVantageAi();
+                    }}
+                >
+                    <img src={assets.pixieIcon} alt="" aria-hidden="true" className="pixie-greet-icon" />
+                    <span className="pixie-greet-text">{greetMessage}</span>
+                </button>
+            )}
         </>
     );
 };
